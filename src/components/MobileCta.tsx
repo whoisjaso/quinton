@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Phone } from "@phosphor-icons/react";
+import { ChatText, Phone } from "@phosphor-icons/react";
+import { usePathname } from "next/navigation";
+import { ctaLabelFor, phoneHref, smsHref } from "@/lib/cta";
 import { brand, cta } from "@/content/site";
 
 /**
@@ -12,6 +14,7 @@ import { brand, cta } from "@/content/site";
 export function MobileCta() {
   const [pastHero, setPastHero] = useState(false);
   const [atForm, setAtForm] = useState(false);
+  const label = ctaLabelFor(usePathname());
 
   useEffect(() => {
     const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.85);
@@ -40,18 +43,19 @@ export function MobileCta() {
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-base/80 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl md:hidden"
         >
-          <div className="flex gap-2">
-            <a href={cta.href} className="btn btn-primary flex-1">
-              {cta.primary}
+          <div className="grid grid-cols-[1fr_auto_auto] gap-2">
+            <a href={cta.href} className="btn btn-primary px-4">
+              {label}
             </a>
             {brand.phone ? (
-              <a
-                href={`tel:${brand.phone.replace(/[^\d+]/g, "")}`}
-                aria-label={`Call ${brand.phone}`}
-                className="btn btn-secondary w-[52px] px-0"
-              >
-                <Phone size={20} />
-              </a>
+              <>
+                <a href={phoneHref} aria-label={`Call ${brand.phone}`} className="btn btn-secondary gap-2 px-4">
+                  <Phone size={18} /> Call
+                </a>
+                <a href={smsHref} aria-label={`Text ${brand.phone}`} className="btn btn-secondary gap-2 px-4">
+                  <ChatText size={18} /> Text
+                </a>
+              </>
             ) : null}
           </div>
         </motion.div>

@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { Reveal } from "./Reveal";
 import { tc } from "@/lib/titleCase";
+import { ArtImage } from "./ArtImage";
 
 type Kind = { name: string; stakes: string; image: string; alt: string };
 
@@ -15,10 +15,10 @@ export function PropertyTypes({ heading, items }: { heading: React.ReactNode; it
         className="no-scrollbar mt-[var(--space-xl)] flex snap-x snap-mandatory gap-[var(--space-md)] overflow-x-auto px-[var(--gutter)] pb-2"
         style={{ scrollPaddingInline: "var(--gutter)" }}
       >
-        {items.map((k) => (
+        {items.map((k, i) => (
           <li key={k.name} className="w-[82vw] shrink-0 snap-start sm:w-[56vw] lg:w-[30vw]">
             <div className="relative aspect-[3/4] overflow-hidden rounded-[4px]">
-              <Image src={k.image} alt={k.alt} fill sizes="(min-width: 1024px) 30vw, 82vw" className="object-cover" />
+              <ArtImage src={k.image} alt={k.alt} sizes="(min-width: 1024px) 32vw, 60vw" priority={i < 2} />
             </div>
             <h3 className="t-heading-lg mt-6">{tc(k.name)}</h3>
             <p className="mt-3 max-w-[40ch] leading-relaxed text-ink-high">{k.stakes}</p>

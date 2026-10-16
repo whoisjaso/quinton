@@ -13,7 +13,7 @@
   --ink-high: #afb0b3;
   --ink-medium: #88898c;
   --line: #2b2c31;
-  --line-strong: #404044;
+  --line-strong: #646569;
   --focus: #6e8bff;
   --shade: rgba(14, 14, 18, 0.72);
 
@@ -173,6 +173,21 @@ body {
   transform: translateX(4px);
 }
 
+}
+
+/* Hero entrance runs in CSS so it starts on first paint, before JavaScript loads */
+@keyframes hero-word {
+  from { transform: translateY(105%); }
+  to { transform: translateY(0); }
+}
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.hero-word { animation: hero-word 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero-in { animation: hero-in 0.7s cubic-bezier(0.25, 0.1, 0.25, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-word, .hero-in { animation: none; }
 }
 
 /* Hero art direction: separate focal point for portrait screens */

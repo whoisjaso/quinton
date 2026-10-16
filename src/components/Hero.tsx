@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
-import { cta } from "@/content/site";
+import { brand, cta } from "@/content/site";
+import { phoneHref } from "@/lib/cta";
 import { titleCase } from "@/lib/titleCase";
+import { ArtImage } from "./ArtImage";
 
-const ease = [0.25, 0.1, 0.25, 1] as const;
-const rise = [0.16, 1, 0.3, 1] as const;
 
 export function Hero({
   image,
@@ -17,7 +16,7 @@ export function Hero({
   secondary,
   eyebrow,
   objectPosition = "center",
-  mobilePosition,
+  ctaLabel,
 }: {
   image: string;
   alt: string;
@@ -26,14 +25,17 @@ export function Hero({
   secondary?: { label: string; href: string };
   eyebrow?: string;
   objectPosition?: string;
-  /** Art direction for portrait screens, e.g. "62% 50%". */
+  /** kept for page compatibility; phones use a dedicated portrait crop */
   mobilePosition?: string;
+  /** page-specific label for the primary action */
+  ctaLabel?: string;
 }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
-  const fade = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const reduce = useReducedMotion();
+  const y = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["0%", "18%"]);
+  const scale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1, 1.08]);
+  const fade = useTransform(scrollYProgress, [0, 0.6], reduce ? [1, 1] : [1, 0]);
   const words = titleCase(headline).split(" ");
 
   return (
@@ -41,18 +43,15 @@ export function Hero({
       <motion.div className="absolute inset-0 -z-10" style={{ y, scale }}>
         <motion.div
           className="absolute inset-0"
-          initial={{ scale: 1.14, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ scale: { duration: 3.2, ease }, opacity: { duration: 1.2, ease } }}
+          initial={false}
         >
-          <Image
+          <ArtImage
             src={image}
             alt={alt}
-            fill
             priority
-            sizes="100vw"
-            className="hero-img object-cover"
-            style={{ ["--pos" as string]: objectPosition, ["--pos-m" as string]: mobilePosition ?? objectPosition }}
+            sizes="120vw"
+            className="hero-img"
+            style={{ ["--pos" as string]: objectPosition, ["--pos-m" as string]: "50% 50%" }}
           />
         </motion.div>
       </motion.div>
@@ -68,55 +67,43 @@ export function Hero({
       <motion.div style={{ opacity: fade }} className="gutter w-full pb-[max(40px,env(safe-area-inset-bottom))] pt-32 md:pb-[clamp(56px,9vh,112px)]">
         <div className="max-w-[60rem]">
           {eyebrow ? (
-            <motion.p
-              className="t-label mb-5 text-ink-high"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease, delay: 0.4 }}
-            >
+            <p className="hero-in t-label mb-5 text-ink-high" style={{ animationDelay: "0.05s" }}>
               {eyebrow}
-            </motion.p>
+            </p>
           ) : null}
           <h1 className="t-display t-hero" aria-label={titleCase(headline)}>
             {words.map((w, i) => (
               <span key={i} aria-hidden>
                 <span className="inline-block overflow-hidden pb-[0.08em] align-bottom">
-                  <motion.span
-                    className="inline-block"
-                    initial={{ y: "105%" }}
-                    animate={{ y: "0%" }}
-                    transition={{ duration: 1.1, ease: rise, delay: 0.45 + i * 0.07 }}
-                  >
+                  <span className="hero-word inline-block" style={{ animationDelay: `${0.1 + i * 0.05}s` }}>
                     {w}
-                  </motion.span>
+                  </span>
                 </span>
                 {i < words.length - 1 ? " " : null}
               </span>
             ))}
           </h1>
-          <motion.p
-            className="t-body-lg mt-5 max-w-[34rem] text-ink-high md:mt-6"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease, delay: 0.5 + words.length * 0.07 }}
-          >
+          <p className="hero-in t-body-lg mt-5 max-w-[34rem] text-ink-high md:mt-6" style={{ animationDelay: `${0.2 + words.length * 0.05}s` }}>
             {sub}
-          </motion.p>
-          <motion.div
-            className="mt-8 flex flex-col gap-3 sm:flex-row md:mt-10"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease, delay: 0.65 + words.length * 0.07 }}
-          >
+          </p>
+          <div className="hero-in mt-8 flex flex-col gap-3 sm:flex-row md:mt-10" style={{ animationDelay: `${0.3 + words.length * 0.05}s` }}>
             <a href={cta.href} className="btn btn-primary">
-              {cta.primary}
+              {ctaLabel ?? cta.primary}
             </a>
             {secondary ? (
               <a href={secondary.href} className="btn btn-secondary">
                 {secondary.label}
               </a>
             ) : null}
-          </motion.div>
+          </div>
+          {brand.phone ? (
+            <p className="hero-in mt-5 text-sm text-ink-high" style={{ animationDelay: `${0.4 + words.length * 0.05}s` }}>
+              Or call or text Quinton directly:{" "}
+              <a href={phoneHref} className="font-semibold text-ink underline underline-offset-4">
+                {brand.phone}
+              </a>
+            </p>
+          ) : null}
         </div>
       </motion.div>
     </section>

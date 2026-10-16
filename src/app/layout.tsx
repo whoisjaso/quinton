@@ -4,6 +4,7 @@ import Script from "next/script";
 import { brand } from "@/content/site";
 import { MotionProvider } from "@/components/MotionProvider";
 import { MobileCta } from "@/components/MobileCta";
+import { Tracking } from "@/components/Tracking";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: brand.legalName,
-    images: [{ url: "/images/hero-estate-dusk.jpg", width: 2400, height: 1600 }],
+    images: [{ url: "/images/og-home.jpg", width: 1200, height: 630 }],
   },
   twitter: { card: "summary_large_image" },
 };
@@ -47,6 +48,7 @@ export default function RootLayout({
         <MotionProvider>
           {children}
           <MobileCta />
+          <Tracking />
         </MotionProvider>
         {pixelId ? (
           <Script id="meta-pixel" strategy="afterInteractive">

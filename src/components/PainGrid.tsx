@@ -25,7 +25,7 @@ export function PainGrid({
         <ul className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:col-span-6 lg:col-start-7">
           {items.map((it, i) => (
             <Reveal as="li" key={it.pain} delay={(i % 2) * 0.08}>
-              <p className="t-heading-md text-ink-medium line-through decoration-line-strong decoration-1">{it.pain}</p>
+              <p className="flex items-baseline gap-3 t-heading-md text-ink-high"><span aria-hidden className="inline-block h-px w-6 shrink-0 translate-y-[-0.3em] bg-ink-medium" />{it.pain}</p>
               <p className="mt-3 leading-relaxed text-ink">{it.answer}</p>
             </Reveal>
           ))}

@@ -38,7 +38,7 @@ export function Verdict({
                 href={s.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-ink-medium underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink-high"
+                className="inline-block py-2.5 text-xs text-ink-medium underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink-high"
               >
                 {s.source}
               </a>

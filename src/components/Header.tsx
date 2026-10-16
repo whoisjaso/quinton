@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { List, Phone, X } from "@phosphor-icons/react";
 import { brand, cta, nav } from "@/content/site";
+import { usePathname } from "next/navigation";
+import { ctaLabelFor } from "@/lib/cta";
 import { Wordmark } from "./Wordmark";
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
@@ -15,6 +17,7 @@ export function Header() {
   const [solid, setSolid] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
+  const label = ctaLabelFor(usePathname());
 
   useMotionValueEvent(scrollY, "change", (y) => {
     const prev = scrollY.getPrevious() ?? 0;
@@ -38,6 +41,7 @@ export function Header() {
     <motion.header
       animate={{ y: hidden && !open ? "-100%" : "0%" }}
       transition={{ duration: 0.45, ease }}
+      onFocusCapture={() => setHidden(false)}
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-500 ${
         solid || open
           ? "border-b border-line bg-base/85 backdrop-blur-xl"
@@ -92,7 +96,7 @@ export function Header() {
             </a>
           ) : null}
           <a href={cta.href} className="btn btn-primary hidden min-h-[44px] px-5 text-sm sm:inline-flex">
-            {cta.primary}
+            {label}
           </a>
         </div>
       </div>
@@ -134,7 +138,7 @@ export function Header() {
             >
               <p className="text-sm text-ink-medium">{brand.descriptor}</p>
               <a href={cta.href} onClick={() => setOpen(false)} className="btn btn-primary w-full">
-                {cta.primary}
+                {label}
               </a>
             </motion.div>
           </motion.nav>

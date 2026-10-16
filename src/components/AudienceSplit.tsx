@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { ArrowRight } from "@phosphor-icons/react";
+import { ArtImage } from "./ArtImage";
 
 const paths = [
   {
@@ -35,12 +35,12 @@ function Tile({ p, i }: { p: (typeof paths)[number]; i: number }) {
     <Link ref={ref} href={p.href} className="group relative block overflow-hidden md:rounded-[4px]">
       <div className="relative h-[82svh] md:h-auto md:aspect-[5/6] lg:aspect-[4/4.4]">
         <motion.div className="absolute inset-[-8%_0]" style={{ scale, y }}>
-          <Image
+          <ArtImage
             src={p.image}
             alt={p.alt}
-            fill
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-cover transition-transform duration-[1200ms] ease-[var(--ease)] group-hover:scale-[1.04]"
+            sizes="60vw"
+            priority={i === 0}
+            className="transition-transform duration-[1200ms] ease-[var(--ease)] group-hover:scale-[1.04]"
           />
         </motion.div>
         <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,rgba(14,14,18,0.9),rgba(14,14,18,0.05)_58%)]" />

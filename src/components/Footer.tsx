@@ -8,7 +8,7 @@ export function Footer() {
       <div className="flex flex-col gap-12 md:flex-row md:items-start md:justify-between">
         <div className="flex flex-col items-start">
           <div className="-ml-0">
-            <Wordmark withDescriptor />
+            <Wordmark withDescriptor align="start" />
           </div>
           {brand.serviceArea ? <p className="mt-8 text-ink-high">Serving {brand.serviceArea}.</p> : null}
         </div>

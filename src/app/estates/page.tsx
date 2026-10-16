@@ -11,10 +11,11 @@ import { Process } from "@/components/Process";
 import { Faq } from "@/components/Faq";
 import { Inquiry } from "@/components/Inquiry";
 import { Footer } from "@/components/Footer";
-import { brand, faqs, stats } from "@/content/site";
+import { Owner } from "@/components/Owner";
+import { brand, disciplinesEstate, faqsEstate, stats } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Private estate care",
+  title: "Private Estate Care",
   description:
     "Grounds and exterior surfaces for private estates, maintained by one accountable team with a report after every visit.",
 };
@@ -61,10 +62,13 @@ export default function Estates() {
         <Verdict
           headline="The grounds are part of the asset."
           body="Landscape condition is priced in by every buyer, appraiser and guest who walks the drive. Keeping it at its best is not decoration. It is how the value of the property is protected."
-          stats={[stats.homeValue, stats.lawnRecovery, stats.contractorProblems]}
+          stats={[stats.homeValue, stats.landscapeUpgrade, stats.contractorProblems]}
         />
 
+        <Owner lines={["I answer this phone, I walk every property with you, and I am on site for the first visit.", "If something is not right, you text me directly. Not a call center, not a dispatcher.", "You get photos after every visit, so you never have to walk outside to check."]} />
+
         <Standard
+          items={disciplinesEstate}
           heading="Every surface. Every line. Every visit."
           intro="Turf, hedges, beds, stone, facades and terraces, held to one standard by one team that knows the property."
         />
@@ -136,12 +140,13 @@ export default function Estates() {
 
         <Process heading="Four steps to an exterior you never think about." />
 
-        <Faq items={faqs} />
+        <Faq items={faqsEstate} />
 
         <Inquiry
           heading="Request a walkthrough."
-          sub="We walk the property with you or your estate manager, then send a written plan and a fixed monthly figure."
+          sub="Quinton walks the property with you or your estate manager, then sends a written plan and a fixed monthly figure."
           defaultType="Private estate"
+          variant="estate"
         />
       </main>
       <Footer />

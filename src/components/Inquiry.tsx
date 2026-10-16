@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CheckCircle, CircleNotch } from "@phosphor-icons/react";
 import { brand, cta } from "@/content/site";
+import { ATTRIBUTION_KEY } from "./Tracking";
 import { tc } from "@/lib/titleCase";
 
 type Status = "idle" | "sending" | "sent" | "error";
@@ -17,15 +18,11 @@ const serviceOptions = [
   "Pre event detailing",
 ];
 
-const propertyTypes = ["Private estate", "Retail or mixed use", "Hospitality", "Office", "Multifamily or HOA", "Other"];
+const estateTypes = ["Private estate", "Residence", "Other"];
+const commercialTypes = ["Retail or restaurant", "Retail center or mixed use", "Hospitality", "Office", "Multifamily or HOA", "Other"];
 
 const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid", "gclid"];
 
-declare global {
-  interface Window {
-    fbq?: (...args: unknown[]) => void;
-  }
-}
 
 const field =
   "w-full rounded-[4px] border border-line-strong bg-base px-4 py-3.5 text-ink placeholder:text-ink-medium transition-colors duration-300 hover:border-ink-medium focus:border-ink focus:outline-none";
@@ -34,23 +31,40 @@ export function Inquiry({
   heading,
   sub,
   defaultType,
+  variant = "general",
+  ctaLabel = cta.primary,
 }: {
   heading: React.ReactNode;
   sub: string;
   defaultType?: string;
+  variant?: "general" | "estate" | "commercial";
+  ctaLabel?: string;
 }) {
+  const propertyTypes = variant === "estate" ? estateTypes : variant === "commercial" ? commercialTypes : [...estateTypes.slice(0, 1), ...commercialTypes];
+  const notesHint =
+    variant === "commercial"
+      ? "Number of sites, best time to come, gum or grease spots, a deadline. Optional."
+      : "Gate codes, timing, an upcoming event. Optional.";
   const [status, setStatus] = useState<Status>("idle");
-  const [services, setServices] = useState<string[]>([]);
+  const [services, setServices] = useState<string[]>(variant === "commercial" ? ["Storefront and walkways"] : []);
+  const doneRef = useRef<HTMLDivElement>(null);
   const [attribution, setAttribution] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    // first-touch attribution saved by <Tracking />, falling back to this URL
     const found: Record<string, string> = {};
+    try {
+      Object.assign(found, JSON.parse(sessionStorage.getItem(ATTRIBUTION_KEY) ?? "{}"));
+    } catch {
+      /* ignore */
+    }
+    const params = new URLSearchParams(window.location.search);
     for (const k of utmKeys) {
       const v = params.get(k);
-      if (v) found[k] = v;
+      if (v && !found[k]) found[k] = v;
     }
-    found.landing_page = window.location.pathname;
+    found.landing_page ??= window.location.pathname;
+    found.form_page = window.location.pathname;
     setAttribution(found);
   }, []);
 
@@ -63,15 +77,21 @@ export function Inquiry({
     if (!form.reportValidity()) return;
     setStatus("sending");
     const data = Object.fromEntries(new FormData(form).entries());
+    const eventId = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now());
     try {
       const res = await fetch("/api/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, services, ...attribution }),
+        body: JSON.stringify({ ...data, services, ...attribution, event_id: eventId }),
       });
       if (!res.ok) throw new Error(String(res.status));
-      window.fbq?.("track", "Lead", { content_category: String(data.propertyType ?? "") });
+      window.fbq?.("track", "Lead", { content_category: String(data.propertyType ?? "") }, { eventID: eventId });
       setStatus("sent");
+      requestAnimationFrame(() => {
+        const el = document.getElementById("walkthrough");
+        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+        setTimeout(() => doneRef.current?.focus(), 400);
+      });
     } catch {
       setStatus("error");
     }
@@ -90,10 +110,13 @@ export function Inquiry({
             </div>
             {brand.phone ? (
               <div>
-                <dt className="text-ink-medium">Direct line</dt>
-                <dd className="mt-1">
+                <dt className="text-ink-medium">Call or text Quinton</dt>
+                <dd className="mt-1 flex flex-wrap gap-x-5 gap-y-1">
                   <a href={`tel:${brand.phone.replace(/[^\d+]/g, "")}`} className="underline underline-offset-4">
                     {brand.phone}
+                  </a>
+                  <a href={`sms:${brand.phone.replace(/[^\d+]/g, "")}`} className="text-ink-high underline underline-offset-4">
+                    Text a photo
                   </a>
                 </dd>
               </div>
@@ -116,6 +139,8 @@ export function Inquiry({
             {status === "sent" ? (
               <motion.div
                 key="sent"
+                ref={doneRef}
+                tabIndex={-1}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="flex min-h-[420px] flex-col justify-center rounded-[4px] border border-line-strong p-10"
@@ -124,7 +149,8 @@ export function Inquiry({
                 <CheckCircle size={40} weight="light" />
                 <p className="t-heading-lg mt-6">Request Received.</p>
                 <p className="mt-3 max-w-[44ch] leading-relaxed text-ink-high">
-                  We will contact you {brand.responseWindow} to schedule the walkthrough.
+                  Quinton will call you personally {brand.responseWindow}
+                  {brand.phone ? `, from ${brand.phone}` : ""}. Want it faster? Text him a photo of the property.
                 </p>
               </motion.div>
             ) : (
@@ -144,12 +170,12 @@ export function Inquiry({
                   <input id="phone" name="phone" type="tel" required autoComplete="tel" className={field} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="email" className="text-sm font-semibold">Email</label>
-                  <input id="email" name="email" type="email" required autoComplete="email" className={field} />
+                  <label htmlFor="email" className="text-sm font-semibold">Email <span className="font-normal text-ink-medium">(optional)</span></label>
+                  <input id="email" name="email" type="email" autoComplete="email" className={field} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="location" className="text-sm font-semibold">Property city or ZIP</label>
-                  <input id="location" name="location" required autoComplete="postal-code" className={field} />
+                  <label htmlFor="location" className="text-sm font-semibold">Property ZIP code</label>
+                  <input id="location" name="location" required autoComplete="postal-code" inputMode="numeric" className={field} />
                 </div>
                 <div className="flex flex-col gap-2 sm:col-span-2">
                   <label htmlFor="propertyType" className="text-sm font-semibold">Property type</label>
@@ -191,7 +217,7 @@ export function Inquiry({
                     rows={4}
                     className={field}
                   />
-                  <p className="text-xs text-ink-medium">Gate codes, timing, an upcoming event. Optional.</p>
+                  <p className="text-xs text-ink-medium">{notesHint}</p>
                 </div>
                 <div aria-hidden className="absolute left-[-9999px]">
                   <label htmlFor="company">Company</label>
@@ -200,7 +226,7 @@ export function Inquiry({
                 <div className="flex flex-col items-start gap-4 sm:col-span-2 sm:flex-row sm:items-center">
                   <button type="submit" className="btn btn-primary" disabled={status === "sending"}>
                     {status === "sending" ? <CircleNotch size={18} className="animate-spin" /> : null}
-                    {cta.primary}
+                    {ctaLabel}
                   </button>
                   {status === "error" ? (
                     <p className="text-sm text-[#ff8a8f]" role="alert">

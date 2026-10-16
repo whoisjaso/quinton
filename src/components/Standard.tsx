@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useScroll, useTransform, type MotionValue } fr
 import { useEffect, useRef, useState } from "react";
 import { disciplines, type Discipline } from "@/content/site";
 import { tc } from "@/lib/titleCase";
+import { ArtImage } from "./ArtImage";
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
 const rise = [0.16, 1, 0.3, 1] as const;
@@ -39,7 +40,7 @@ function Scene({
       className="sticky top-0 isolate flex h-[100svh] origin-top flex-col justify-end overflow-hidden"
     >
       <motion.div className="absolute inset-0 -z-10" style={{ scale: imgScale }}>
-        <Image src={d.image} alt={d.alt} fill sizes="100vw" className="object-cover" />
+        <ArtImage src={d.image} alt={d.alt} sizes="100vw" priority={i < 2} />
       </motion.div>
       <div
         aria-hidden
@@ -66,19 +67,21 @@ function Scene({
   );
 }
 
-function MobileStack() {
+function MobileStack({ items }: { items: Discipline[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   return (
     <div ref={ref} className="relative mt-[var(--space-xl)] lg:hidden">
-      {disciplines.map((d, i) => (
-        <Scene key={d.name} d={d} i={i} total={disciplines.length} progress={scrollYProgress} />
+      {items.map((d, i) => (
+        <Scene key={d.name} d={d} i={i} total={items.length} progress={scrollYProgress} />
       ))}
+      {/* dwell: the last scene holds long enough to read before the section ends */}
+      <div aria-hidden className="h-[40svh]" />
     </div>
   );
 }
 
-export function Standard({ heading, intro }: { heading: string; intro: string }) {
+export function Standard({ heading, intro, items = disciplines }: { heading: string; intro: string; items?: Discipline[] }) {
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLElement | null)[]>([]);
 
@@ -111,7 +114,7 @@ export function Standard({ heading, intro }: { heading: string; intro: string })
       </div>
 
       {/* Phones and tablets: stacked full-screen scenes */}
-      <MobileStack />
+      <MobileStack items={items} />
 
       {/* Desktop: pinned image, scrolling copy */}
       <div className="gutter mt-[var(--space-xl)] hidden gap-[var(--space-lg)] lg:grid lg:grid-cols-12">
@@ -126,17 +129,17 @@ export function Standard({ heading, intro }: { heading: string; intro: string })
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.9, ease }}
               >
-                <Image
-                  src={disciplines[active].image}
-                  alt={disciplines[active].alt}
+                <Image quality={90}
+                  src={items[active].image}
+                  alt={items[active].alt}
                   fill
-                  sizes="50vw"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
                 />
               </motion.div>
             </AnimatePresence>
             <div className="absolute bottom-0 left-0 flex gap-2 p-6" aria-hidden>
-              {disciplines.map((d, i) => (
+              {items.map((d, i) => (
                 <span
                   key={d.name}
                   className={`h-[2px] w-10 transition-colors duration-500 ${i === active ? "bg-ink" : "bg-ink/30"}`}
@@ -147,7 +150,7 @@ export function Standard({ heading, intro }: { heading: string; intro: string })
         </div>
 
         <div className="lg:col-span-5 lg:col-start-8">
-          {disciplines.map((d, i) => (
+          {items.map((d, i) => (
             <article
               key={d.name}
               data-index={i}

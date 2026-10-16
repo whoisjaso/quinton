@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ArtImage } from "./ArtImage";
 import { Reveal } from "./Reveal";
 import { tc } from "@/lib/titleCase";
 
@@ -12,7 +12,7 @@ export function Moments({ items }: { items: [Moment, Moment] }) {
         {items.map((m, i) => (
           <Reveal key={m.title} delay={i * 0.12} className={i === 0 ? "lg:col-span-7" : "lg:col-span-5 lg:mt-[var(--space-xl)]"}>
             <div className={`relative overflow-hidden rounded-[4px] ${i === 0 ? "aspect-[4/3]" : "aspect-[4/5]"}`}>
-              <Image src={m.image} alt={m.alt} fill sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
+              <ArtImage src={m.image} alt={m.alt} sizes="(min-width: 1024px) 60vw, 100vw" />
             </div>
             <h3 className="t-heading-lg mt-8">{tc(m.title)}</h3>
             <p className="mt-3 max-w-[48ch] leading-relaxed text-ink-high">{m.body}</p>

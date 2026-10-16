@@ -107,7 +107,25 @@ g[st : st + int(0.9 * SR)] = np.linspace(1, 0, int(0.9 * SR))
 g[st + int(0.9 * SR) :] = 0
 mus *= g[:, None]
 
-for name, mix in [("thought-fx-only", fx), ("thought-mix", fx + mus * 10 ** (3 / 20))]:
+# voiceover: Kokoro af_heart through the voice chain, each line on its beat; music ducks under the voice
+VO = [("l01", 30), ("l02", 150), ("l03", 260), ("l04", 450), ("l05", 556), ("l06", 636), ("l07", 702),
+      ("l08", 792), ("l09", 880), ("l10", 1062), ("l11", 1150), ("l12", 1286), ("l15", 1400), ("l16", 1552), ("l17", 1620)]
+vo = np.zeros((N, 2), np.float32)
+for key, f0 in VO:
+    x = load(f"vo/chain_af_heart_{key}.wav")
+    st = int(F(f0) * SR)
+    vo[st : st + len(x)] += x[: N - st]
+venv = np.abs(vo).mean(1)
+w = int(0.05 * SR)
+venv = np.convolve(venv, np.ones(w) / w, "same")
+on = (venv > 0.004).astype(np.float32)
+att, rel = int(0.12 * SR), int(0.45 * SR)
+duck = np.convolve(on, np.ones(rel) / rel, "same")
+duck = np.clip(duck * 3, 0, 1)
+mus *= (1 - 0.45 * duck)[:, None]  # about -5 dB under the voice
+fx_under = fx * (1 - 0.25 * duck)[:, None]
+
+for name, mix in [("thought-fx-only", fx), ("thought-mix", fx + mus * 10 ** (3 / 20)), ("thought-vo-mix", fx_under + mus * 10 ** (3 / 20) + vo * 10 ** (-12 / 20)), ("thought-vo-only", vo)]:
     raw = f"{out}/{name}.f32"
     mix.astype(np.float32).tofile(raw)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "f32le", "-ar", str(SR), "-ac", "2", "-i", raw,

@@ -9,12 +9,15 @@ import { brand } from "@/content/site";
 */
 
 const MAX = 2000;
+const SERVICES = new Set(["Full grounds program", "Pressure and soft washing", "Storefront and walkways", "Hedges and beds", "Seasonal cleanup", "Pre event detailing"]);
 const clean = (v: unknown) => (typeof v === "string" ? v.trim().slice(0, MAX) : undefined);
 
 export async function POST(req: Request) {
   let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    const raw = await req.text();
+    if (raw.length > 16_000) return NextResponse.json({ ok: false, error: "too_large" }, { status: 413 });
+    body = JSON.parse(raw);
   } catch {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
@@ -28,9 +31,12 @@ export async function POST(req: Request) {
     email: clean(body.email),
     location: clean(body.location),
     propertyType: clean(body.propertyType),
-    services: Array.isArray(body.services) ? body.services.map(clean).filter(Boolean) : [],
+    services: Array.isArray(body.services) ? body.services.map(clean).filter((v): v is string => !!v && SERVICES.has(v)).slice(0, 8) : [],
     notes: clean(body.notes),
     landingPage: clean(body.landing_page),
+    formPage: clean(body.form_page),
+    referrer: clean(body.referrer),
+    eventId: clean(body.event_id),
     utm: Object.fromEntries(
       ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid", "gclid"]
         .map((k) => [k, clean(body[k])])
@@ -39,8 +45,14 @@ export async function POST(req: Request) {
     receivedAt: new Date().toISOString(),
   };
 
-  if (!lead.name || !lead.email || !lead.phone) {
+  if (!lead.name || !lead.phone) {
     return NextResponse.json({ ok: false, error: "missing_fields" }, { status: 422 });
+  }
+  if ((lead.phone.match(/\d/g) ?? []).length < 10) {
+    return NextResponse.json({ ok: false, error: "invalid_phone" }, { status: 422 });
+  }
+  if (lead.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email)) {
+    return NextResponse.json({ ok: false, error: "invalid_email" }, { status: 422 });
   }
 
   try {
@@ -63,12 +75,16 @@ export async function POST(req: Request) {
         body: JSON.stringify({
           from: process.env.INQUIRY_FROM_EMAIL ?? "onboarding@resend.dev",
           to,
-          reply_to: lead.email,
+          ...(lead.email ? { reply_to: lead.email } : {}),
           subject: `Walkthrough request: ${lead.propertyType ?? "property"} in ${lead.location ?? "unknown"}`,
           text: `New ${brand.name} inquiry\n\n${lines.join("\n")}`,
         }),
       });
       if (!r.ok) throw new Error(`resend ${r.status}`);
+    } else if (process.env.NODE_ENV === "production" && !process.env.ALLOW_LOG_ONLY_LEADS) {
+      // never tell a visitor "received" when nobody will see it; the form then shows the phone number
+      console.error("[inquiry] no delivery configured", JSON.stringify(lead));
+      return NextResponse.json({ ok: false, error: "delivery_not_configured" }, { status: 503 });
     } else {
       console.log("[inquiry]", JSON.stringify(lead));
     }

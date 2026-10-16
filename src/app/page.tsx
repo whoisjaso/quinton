@@ -11,6 +11,7 @@ import { Process } from "@/components/Process";
 import { Faq } from "@/components/Faq";
 import { Inquiry } from "@/components/Inquiry";
 import { Footer } from "@/components/Footer";
+import { Owner } from "@/components/Owner";
 import { brand, faqs, stats } from "@/content/site";
 
 export default function Home() {
@@ -36,6 +37,8 @@ export default function Home() {
           stats={[stats.shopExterior, stats.avoidedDirty, stats.homeValue, stats.officeRent]}
         />
 
+        <Owner lines={["I answer this phone, I walk every property with you, and I am on site for the first visit.", "If something is not right, you text me directly. Not a call center, not a dispatcher.", "You get photos after every visit, so you never have to walk outside to check."]} />
+
         <Standard
           heading="Four disciplines. One standard."
           intro={`Most providers mow, or wash, or trim. ${brand.name} owns the entire exterior, so nothing falls between two vendors and nothing is left for you to chase.`}
@@ -49,7 +52,7 @@ export default function Home() {
         />
 
         <Statement image="/images/turf-dew.jpg" alt="Morning dew on dense green turf">
-          Maintenance is a schedule. A standard is a decision.
+          Same crew. Same day. Photos every visit.
         </Statement>
 
         <Programs
@@ -100,7 +103,7 @@ export default function Home() {
 
         <Inquiry
           heading="Request a walkthrough."
-          sub="Thirty minutes on the property. A written plan and a fixed monthly figure. No obligation."
+          sub="Quinton walks the property with you. You get a written plan and a fixed monthly figure. No obligation."
         />
       </main>
       <Footer />

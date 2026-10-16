@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
 import { tc } from "@/lib/titleCase";
+import { ArtImage } from "./ArtImage";
 
 /** Full bleed image with one sentence. A pause between dense sections. */
 export function Statement({ image, alt, children }: { image: string; alt: string; children: React.ReactNode }) {
@@ -14,7 +14,7 @@ export function Statement({ image, alt, children }: { image: string; alt: string
   return (
     <section ref={ref} className="relative isolate flex min-h-[86vh] items-center overflow-hidden">
       <motion.div className="absolute inset-[-10%_0] -z-10" style={{ y }}>
-        <Image src={image} alt={alt} fill sizes="100vw" className="object-cover" />
+        <ArtImage src={image} alt={alt} sizes="110vw" />
       </motion.div>
       <div aria-hidden className="absolute inset-0 -z-10 bg-[rgba(14,14,18,0.58)]" />
       <div className="gutter w-full">

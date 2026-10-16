@@ -21,11 +21,13 @@ export function Programs({
   intro,
   programs,
   note,
+  ctaLabel = cta.primary,
 }: {
   heading: React.ReactNode;
   intro: string;
   programs: Program[];
   note?: string;
+  ctaLabel?: string;
 }) {
   return (
     <section id="programs" className="gutter section scroll-mt-20">
@@ -58,7 +60,7 @@ export function Programs({
             <div className="flex flex-col items-start gap-4 md:col-span-3 md:items-end md:text-right">
               <p className="text-sm text-ink-medium">{p.pricing ?? "Fixed monthly, by assessment"}</p>
               <a href={cta.href} className="link-arrow text-ink">
-                {cta.primary} <ArrowRight size={18} weight="bold" />
+                {ctaLabel} <ArrowRight size={18} weight="bold" />
               </a>
             </div>
           </Reveal>

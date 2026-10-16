@@ -13,6 +13,8 @@ export const brand = {
   serviceArea: "Greater Houston",
   /** Display phone, e.g. "(713) 555-0142". Leave empty to hide. */
   phone: "(281) 788-6172",
+  /** Optional portrait of Quinton on a real job, e.g. "/images/quinton.jpg". Shown in the owner section when set. */
+  portrait: "",
   email: "",
   /** Set when there are real reviews or credentials to show. */
   insuredStatement: "Fully insured. Certificates issued on request.",
@@ -66,15 +68,15 @@ export const stats = {
     source: "University of Washington, Green Cities research",
     href: "https://depts.washington.edu/hhwb/datasheets/GCGH_datasheet.Economics.pdf",
   },
-  lawnRecovery: {
-    value: "217%",
-    claim: "of the cost of standard lawn care recovered at sale, per realtor estimates.",
-    source: "National Association of Realtors",
-    href: "https://www.nar.realtor/news/real-estate-news/home-and-design/5-outdoor-projects-that-pay-off-the-most",
+  landscapeUpgrade: {
+    value: "10%",
+    claim: "added value, or more, when a landscape goes from average to excellent.",
+    source: "University of Washington and Virginia Tech",
+    href: "https://mynorthwest.com/uncategorized/uw-virginia-tech-studies-show-payoff-for-landscaping/8268",
   },
   contractorProblems: {
-    value: "1 in 2",
-    claim: "homeowners who recently hired a contractor reported problems or were unhappy.",
+    value: "50%",
+    claim: "of homeowners who recently hired a contractor reported problems or were unhappy.",
     source: "Angie's List and Harris Poll",
     href: "https://www.wdef.com/?p=6726",
   },
@@ -204,7 +206,7 @@ export const faqs = [
   },
   {
     q: "Will pressure washing damage stone, brick or paint?",
-    a: "Not when it is done correctly. Delicate surfaces are soft washed at low pressure with cleaners matched to the material. High pressure is reserved for concrete and surfaces built to take it.",
+    a: "Not here. Travertine, limestone and other natural stone are never pressure washed. They are soft washed at low pressure with stone safe cleaners, after a test patch in a hidden spot. High pressure is used only on concrete built to take it.",
   },
   {
     q: "Can you work around events and business hours?",
@@ -222,4 +224,68 @@ export const faqs = [
     q: "Can you provide insurance documentation?",
     a: "Yes. A certificate of insurance can be issued to you, your property manager or your association before work begins.",
   },
+];
+
+/** On the estates page the third discipline is the arrival, not a storefront. */
+export const disciplinesEstate: Discipline[] = disciplines.map((d) =>
+  d.name === "Frontage"
+    ? {
+        name: "Arrival",
+        line: "The front walk your guests remember.",
+        body: "Front walk, steps, motor court and entry beds kept guest ready. Stone and pavers soft washed, never blasted, so nothing etches or stains.",
+        items: ["Front walk and steps", "Motor court and drive", "Entry beds and planters", "Pre event detailing"],
+        image: "/images/modern-steps-lawn.jpg",
+        alt: "Wide stone steps rising through a manicured lawn to a modern entrance",
+      }
+    : d,
+);
+
+export const commitmentsCommercial = [
+  {
+    title: "One point of contact",
+    body: "Quinton answers the phone and walks every site himself. No dispatcher, no ticket queue.",
+  },
+  {
+    title: "Before open or after close",
+    body: "Washing and grounds work scheduled around your trading hours, so customers only see the result.",
+  },
+  {
+    title: "A dated report every visit",
+    body: "Before and after photos you can forward straight to your owner or board.",
+  },
+  {
+    title: "Insured, with paperwork ready",
+    body: "Certificate of insurance and W-9 before the first visit. Your ownership entity named as additional insured on request.",
+  },
+  {
+    title: "Same crew, same sites",
+    body: "The people on your property know it, and know what your tenants complain about.",
+  },
+  {
+    title: "Missed visit, made right",
+    body: "If weather moves a visit you hear it from us first, with the new date.",
+  },
+];
+
+const stoneFaq = {
+  q: "Will pressure washing damage stone, brick or paint?",
+  a: "Not here. Travertine, limestone and other natural stone are never pressure washed. They are soft washed at low pressure with stone safe cleaners, after a test patch in a hidden spot. High pressure is used only on concrete built to take it.",
+};
+
+export const faqsEstate = [
+  { q: "Who will actually be on my property?", a: "Quinton walks the property with you first and is on site for the first visit. After that, the same small crew every time, never a rotating cast of strangers." },
+  stoneFaq,
+  { q: "Can you work around events and travel?", a: "Yes. Visits are planned around your household and guests, and pre event detailing can be booked on short notice. When you are away, the program runs as normal and the photos come to you." },
+  { q: "Do you publish prices?", a: "Estates are quoted after the walkthrough, because every property is different. You receive a fixed monthly figure in writing, and it does not change mid season." },
+  { q: "Can I start with a single visit?", a: "Yes, a Restoration Visit. Many clients start there to see the standard before committing to a program." },
+  { q: "Can you provide insurance documentation?", a: "Yes. A certificate of insurance can be issued to you or your estate manager before work begins." },
+];
+
+export const faqsCommercial = [
+  { q: "How fast can I get a price?", a: "Text a photo of your frontage to (281) 788-6172 and you will usually have a number the same day. Larger properties get a quick site walk first." },
+  { q: "Can you work before we open or after we close?", a: "Yes. Most storefront and sidewalk washing is done early morning or after close, so customers never walk around the work." },
+  { q: "Do you handle more than one site?", a: "Yes. Multi site programs run on a set schedule with one report per site, and Quinton is your single point of contact for all of them." },
+  stoneFaq,
+  { q: "What documentation do you provide?", a: "A certificate of insurance and W-9 before the first visit, your ownership entity named as additional insured on request, and dated before and after photos every visit." },
+  { q: "Can I start with a single visit?", a: "Yes, a Restoration Visit: a full reset before a lease up, inspection, opening or season." },
 ];

@@ -10,10 +10,12 @@ import { Programs } from "@/components/Programs";
 import { Faq } from "@/components/Faq";
 import { Inquiry } from "@/components/Inquiry";
 import { Footer } from "@/components/Footer";
-import { faqs, stats } from "@/content/site";
+import { Owner } from "@/components/Owner";
+import { commitmentsCommercial, faqsCommercial, stats } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Commercial exterior care",
+  title: "Commercial Exterior Care",
+  openGraph: { images: [{ url: "/images/og-commercial.jpg", width: 1200, height: 630 }] },
   description:
     "Storefronts, sidewalks, facades and grounds kept customer ready on a schedule, with dated photo reporting for owners and managers.",
 };
@@ -30,7 +32,8 @@ export default function Commercial() {
           mobilePosition="56% 50%"
           eyebrow="Commercial properties"
           headline="Your storefront is selling. Or it is not."
-          sub="Power washing and grounds care that keep sidewalks, entries and storefronts customer ready, with reports for owners."
+          sub="Sidewalks, entries and storefronts power washed before you open. Text a photo, usually get a price the same day."
+          ctaLabel="Get a Quote"
           secondary={{ label: "View Programs", href: "#programs" }}
         />
 
@@ -71,7 +74,7 @@ export default function Commercial() {
         />
 
         <PainGrid
-          heading="What property managers tell us they are tired of."
+          heading="What owners and managers are tired of."
           intro="Low bid vendors are cheap until you count the follow up. You should not have to inspect the people you pay to inspect for you."
           items={[
             {
@@ -93,6 +96,8 @@ export default function Commercial() {
           ]}
         />
 
+        <Owner lines={["I answer this phone and I walk every site myself.", "Text me a photo of your frontage and I will get you a price, usually the same day.", "Work happens before you open or after you close, and you get dated photos after every visit."]} />
+
         <Standard
           heading="The whole exterior, under one contract."
           intro="Storefront washing, hardscape cleaning and grounds maintenance from one team, so nothing falls between vendors."
@@ -103,10 +108,12 @@ export default function Commercial() {
           intro="Insured before day one, scheduled around your hours, reporting after every visit. The exterior stops being an item on your list."
           image="/images/modern-entry-drive.jpg"
           alt="Clean concrete drive leading to a modern commercial entrance"
+          items={commitmentsCommercial}
         />
 
         <Programs
           heading="Programs for commercial properties."
+          ctaLabel="Get a Quote"
           intro="Scoped on a site walk, billed at a fixed monthly figure, documented every visit."
           programs={[
             {
@@ -146,12 +153,14 @@ export default function Commercial() {
           ]}
         />
 
-        <Faq items={faqs} />
+        <Faq items={faqsCommercial} />
 
         <Inquiry
-          heading="Request a walkthrough."
-          sub="A site walk with you or your property manager, then a written scope and a fixed monthly figure."
-          defaultType="Retail or mixed use"
+          heading="Get a quote."
+          sub="Send the basics, or just text a photo of your frontage. Larger properties get a quick site walk first."
+          defaultType="Retail or restaurant"
+          variant="commercial"
+          ctaLabel="Get a Quote"
         />
       </main>
       <Footer />
