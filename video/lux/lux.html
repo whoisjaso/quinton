@@ -49,13 +49,13 @@
 </div>
 <script src="kit.js"></script>
 <script>
-/* QUINTON, "The First Room". 28 s, 60 fps (1680 f), 1080x1920.
+/* QUINTON, "The First Room". 30 s, 60 fps (1800 f), 1080x1920. Loops seamlessly: frame 1799 flows into frame 0.
    Idea: your grounds are the first room.
    Device: a seam of gold light between two doors. It opens every scene, floods once on the turn,
    and finally lies down as the rule under the name.
    Grammar: every scene is entered through the seam; gold means the standard, grey means neglect;
    open on doors opening, close on doors closing. */
-const W = 1080, H = 1920, END = 1680, CX = 540;
+const W = 1080, H = 1920, END = 1800, CX = 540;
 const E = K.E;
 const A = (n) => `assets/${n}.jpg`;
 
@@ -146,7 +146,7 @@ function seek(t) {
 
   // the opening: seam alone, then doors
   if (f < 96) {
-    const h = 1480 * E.out(K.prog(f, 0, 70));
+    const h = 2 + 1478 * E.out(K.prog(f, 0, 70));
     s1 = [CX - 1.5, 960 - h / 2, 3, h, 1];
   }
 
@@ -213,6 +213,15 @@ function seek(t) {
   }
   // the doors stay closed behind the name, their mouldings dimmed to a whisper
   document.querySelectorAll(".mold, .handle").forEach((m) => (m.style.opacity = f >= 1500 ? 1 - 0.9 * E.smooth(K.prog(f, 1500, 40)) : 1));
+  // loop tail: the rule folds back into the single point of light that frame 0 begins from
+  const LOOP0 = 1722;
+  if (f >= LOOP0) {
+    const a = E.in(K.prog(f, LOOP0 + 6, 28)), b = E.inOut(K.prog(f, LOOP0 + 34, 30));
+    const w = 420 - 417 * a;
+    s1 = [CX - w / 2, K.lerp(906, 959, b), w, 3 - b, 1];
+  }
+  const tailFade = f >= LOOP0 ? 1 - E.smooth(K.prog(f, LOOP0, 40)) : 1;
+  $("doors").style.opacity = f >= LOOP0 ? 1 - E.smooth(K.prog(f, LOOP0 + 8, 44)) : 1;
   if (s1) seam($("s1"), ...s1); else show($("s1"), false);
   if (s2) seam($("s2"), ...s2); else show($("s2"), false);
 
@@ -237,14 +246,14 @@ function seek(t) {
     Object.assign(mark.style, {
       top: (nameDrop ? 1420 : 760) + "px", fontSize: "118px",
       letterSpacing: `${0.62 - 0.22 * p}em`, paddingLeft: `${0.62 - 0.22 * p}em`,
-      opacity: E.smooth(K.prog(f, t0, 30)) * (1 - outp), filter: `blur(${(1 - p) * 8 + outp * 6}px)`,
+      opacity: E.smooth(K.prog(f, t0, 30)) * (1 - outp) * tailFade, filter: `blur(${(1 - p) * 8 + outp * 6 + (1 - tailFade) * 8}px)`,
     });
   } else show(mark, false);
   const fadeUp = (el, t0, top, t1 = 1e9) => {
     if (f < t0 || f > t1 + 20) return show(el, false);
     show(el, true);
     const p = E.out(K.prog(f, t0, 34)), q = E.exit(K.prog(f, t1, 18));
-    Object.assign(el.style, { top: top + "px", opacity: p * (1 - q), transform: `translateY(${(1 - p) * 20}px)`, filter: `blur(${(1 - p) * 6}px)` });
+    Object.assign(el.style, { top: top + "px", opacity: p * (1 - q) * tailFade, transform: `translateY(${(1 - p) * 20}px)`, filter: `blur(${(1 - p) * 6 + (1 - tailFade) * 6}px)` });
   };
   fadeUp($("desc"), nameDrop ? 724 : 1548, nameDrop ? 1570 : 948, nameDrop ? 772 : 1e9);
   fadeUp($("cta"), 1584, 1090);

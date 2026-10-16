@@ -2,7 +2,7 @@
 import subprocess, sys
 import numpy as np
 
-SR, FPS, LEN = 48000, 60, 28.0
+SR, FPS, LEN = 48000, 60, 30.0
 N = int(LEN * SR)
 A = "audio/"
 F = lambda f: f / FPS
@@ -51,7 +51,10 @@ env[: int(1.2 * SR)] = np.linspace(0, 1, int(1.2 * SR))
 room *= env[:, None]
 place(room[: int(11.3 * SR)], 0, -20, "start")
 place(room[int(12 * SR) : int(15.4 * SR)], F(1092), -24, "start")  # under the lull
-place(room[int(16 * SR) : int(19 * SR)], F(1500), -22, "start")  # behind the closed doors
+# behind the closed doors, fading to nothing on the loop point so it rejoins the opening fade-in
+tail = room[int(16 * SR) : int(16 * SR) + int((LEN - F(1500)) * SR)].copy()
+tail *= np.linspace(1, 0, len(tail))[:, None] ** 1.2
+place(tail, F(1500), -21, "start")
 steps = load(A + "steps-cathedral.mp3")
 s_env = np.ones(len(steps))
 s_env[int(1.6 * SR) :] = np.linspace(1, 0, len(steps) - int(1.6 * SR)) ** 1.5
