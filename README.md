@@ -49,4 +49,4 @@ python3 mix.py /tmp/frames/cues.json /tmp # ad-mix.wav and ad-fx-only.wav
 ffmpeg -framerate 60 -i /tmp/frames/f%05d.png -i /tmp/ad-mix.wav -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p -c:a aac -b:a 192k -shortest renders/quinton-ad.mp4
 ```
 
-Open `ad.html#preview` in a browser for a live preview. Music: "The Journey" from Mixkit. Effects: Mixkit. Both under the Mixkit free license.
+Open `ad.html#preview` in a browser for a live preview. Music: Mixkit track #797. Effects: Mixkit. Both under the Mixkit free license.

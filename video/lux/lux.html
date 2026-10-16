@@ -1,0 +1,268 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Quinton, The First Room</title>
+<link rel="stylesheet" href="fonts-local.css" />
+<style>
+  html, body { margin: 0; background: #0a0908; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #0a0908; font-family: "Cormorant", Georgia, serif; color: #f6ead0; }
+  #imgs, #texts, #doors { position: absolute; inset: 0; }
+  .img { position: absolute; inset: 0; overflow: hidden; display: none; }
+  .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+  #scrim { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.05) 26%, rgba(10,9,8,0.1) 52%, rgba(10,9,8,0.78) 74%, rgba(10,9,8,0.9) 100%); }
+  .ln { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; line-height: 1.02; font-weight: 300; }
+  .ln span { display: inline-block; }
+  .seam { position: absolute; display: none; background: #e9cf96; box-shadow: 0 0 18px 4px rgba(233,190,110,0.55), 0 0 60px 14px rgba(201,163,95,0.22); }
+  #flood { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, #fff3d6 0%, #e2c180 34%, #9a7440 70%, #2a1f12 100%); opacity: 0; pointer-events: none; }
+  .door { position: absolute; top: 0; height: 1920px; width: 540px; display: none; background: linear-gradient(90deg, #0d0b09, #16120d 50%, #0d0b09); backface-visibility: hidden; }
+  .door .mold { position: absolute; border: 2px solid rgba(201,163,95,0.55); }
+  .door .handle { position: absolute; top: 900px; width: 6px; height: 150px; background: linear-gradient(#f0d8a0, #a8823f); border-radius: 3px; }
+  #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 46%, transparent 52%, rgba(6,5,4,0.7) 100%); }
+  #grain { position: absolute; inset: 0; width: 1080px; height: 1920px; pointer-events: none; opacity: 0.07; mix-blend-mode: overlay; }
+  #mark { position: absolute; left: 0; right: 0; text-align: center; font-weight: 400; text-transform: uppercase; display: none; color: #f6ead0; }
+  .center { position: absolute; left: 0; right: 0; text-align: center; display: none; }
+  .caps { font-weight: 500; text-transform: uppercase; letter-spacing: 0.34em; color: #c9a35f; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="imgs"></div>
+  <div id="scrim"></div>
+  <div id="flood"></div>
+  <div id="doors" style="perspective: 2200px">
+    <div class="door" id="dl"><div class="mold" style="left:70px;top:120px;width:380px;height:760px"></div><div class="mold" style="left:70px;top:1000px;width:380px;height:780px"></div><div class="handle" style="right:34px"></div></div>
+    <div class="door" id="dr"><div class="mold" style="left:90px;top:120px;width:380px;height:760px"></div><div class="mold" style="left:90px;top:1000px;width:380px;height:780px"></div><div class="handle" style="left:34px"></div></div>
+  </div>
+  <div id="texts"></div>
+  <div id="mark">Quinton</div>
+  <div class="center caps" id="desc" style="font-size:30px">Estate &amp; Commercial Grounds</div>
+  <div class="center" id="cta" style="font-size:50px;font-weight:500;letter-spacing:0.04em">
+    <span style="display:inline-block;border:1.5px solid #c9a35f;color:#f6ead0;padding:26px 58px">Request a Walkthrough</span>
+  </div>
+  <div class="center" id="phone" style="font-size:52px;font-weight:400;letter-spacing:0.06em">(281) 788-6172</div>
+  <div class="center caps" id="area" style="font-size:26px">Greater Houston</div>
+  <div class="seam" id="s1"></div>
+  <div class="seam" id="s2"></div>
+  <div id="vignette"></div>
+  <img id="grain" src="assets/grain0.png" />
+</div>
+<script src="kit.js"></script>
+<script>
+/* QUINTON, "The First Room". 28 s, 60 fps (1680 f), 1080x1920.
+   Idea: your grounds are the first room.
+   Device: a seam of gold light between two doors. It opens every scene, floods once on the turn,
+   and finally lies down as the rule under the name.
+   Grammar: every scene is entered through the seam; gold means the standard, grey means neglect;
+   open on doors opening, close on doors closing. */
+const W = 1080, H = 1920, END = 1680, CX = 540;
+const E = K.E;
+const A = (n) => `assets/${n}.jpg`;
+
+// scenes: open = frame the seam starts drawing (null = enters another way)
+const scenes = [
+  { img: "e-gallery",           from: 70,   to: 262,  open: "doors", pos: "50% 40%", s: [1.12, 1.0] },
+  { img: "e-gates",             from: 236,  to: 352,  open: 236,  pos: "50% 55%", s: [1.42, 1.28] },
+  { img: "e-garden",            from: 326,  to: 452,  open: 326,  pos: "50% 50%", s: [1.5, 1.34] },
+  { img: "c-storefront",        from: 426,  to: 552,  open: 426,  pos: "50% 50%", s: [1.22, 1.1], drain: true },
+  { img: "c-modern-entry-drive",from: 540,  to: 592,  open: "cut", pos: "50% 80%", s: [1.4, 1.32] },
+  { img: "c-garden-path",       from: 580,  to: 632,  open: "cut", pos: "50% 60%", s: [1.35, 1.27] },
+  { img: "c-estate-classic-lawn",from: 620, to: 668,  open: "cut", pos: "50% 85%", s: [1.4, 1.32] },
+  { img: "g-hero-estate-dusk",  from: 690,  to: 812,  open: "flood", pos: "42% 50%", s: [1.2, 1.06] },
+  { img: "g-turf-macro",        from: 786,  to: 882,  open: 786,  pos: "50% 70%", s: [1.3, 1.16] },
+  { img: "g-hardscape-pool-deck",from: 856, to: 952,  open: 856,  pos: "28% 60%", s: [1.3, 1.16] },
+  { img: "g-storefront",        from: 926,  to: 1022, open: 926,  pos: "50% 50%", s: [1.26, 1.12] },
+  { img: "g-hands-pruning",     from: 996,  to: 1112, open: 996,  pos: "35% 50%", s: [1.22, 1.08] },
+  { img: "e-parterre",          from: 1086, to: 1292, open: 1086, pos: "50% 45%", s: [1.08, 1.0] },
+  { img: "e-gallery",           from: 1266, to: 1384, open: 1266, pos: "50% 58%", s: [1.15, 3.2], push: true },
+  { img: "g-modern-dusk-lawn",  from: 1378, to: 1500, open: "cut", pos: "50% 50%", s: [1.16, 1.04] },
+];
+
+// statements: lines of words; serif light, centred, title case
+const beats = [
+  { t: 28,   out: 116,  lines: [["Every", "Great", "House"]], y: 1460, size: 104 },
+  { t: 128,  out: 222,  lines: [["Is", "Judged", "at"], ["the", "Door."]], y: 1400, size: 124 },
+  { t: 252,  out: 318,  lines: [["Kings", "Built", "Gates"], ["to", "Be", "Seen."]], y: 1400, size: 116 },
+  { t: 342,  out: 414,  lines: [["And", "Grounds"], ["to", "Be", "Admired."]], y: 1400, size: 116 },
+  { t: 446,  out: 528,  lines: [["Your", "Customers"], ["Still", "Judge", "Yours."]], y: 1400, size: 116 },
+  { t: 546,  out: 576,  lines: [["Stained", "Entries."]], y: 1460, size: 112, fast: true },
+  { t: 586,  out: 616,  lines: [["Ragged", "Hedges."]], y: 1460, size: 112, fast: true },
+  { t: 626,  out: 652,  lines: [["Tired", "Lawns."]], y: 1460, size: 112, fast: true },
+  { t: 806,  out: 852,  lines: [["Lawns", "Cut", "to", "the", "Line."]], y: 1460, size: 100 },
+  { t: 876,  out: 922,  lines: [["Power", "Washed."], ["Never", "Etched."]], y: 1400, size: 104 },
+  { t: 946,  out: 992,  lines: [["Storefronts,", "Immaculate."]], y: 1460, size: 96 },
+  { t: 1016, out: 1084, lines: [["A", "Photo", "Report"], ["After", "Every", "Visit."]], y: 1400, size: 104 },
+  { t: 1110, out: 1250, lines: [["Discreet.", "Exact."], ["Every", "Single", "Visit."]], y: 1400, size: 116, slow: true },
+  { t: 1388, out: 1462, lines: [["Your", "Grounds"], ["Are", "the", "First", "Room."]], y: 1380, size: 128 },
+];
+
+// ── build DOM ──
+const imgsEl = document.getElementById("imgs");
+scenes.forEach((s) => {
+  const d = document.createElement("div"); d.className = "img";
+  const im = document.createElement("img"); im.src = A(s.img); im.style.objectPosition = s.pos;
+  d.appendChild(im); imgsEl.appendChild(d); s.el = d; s.im = im;
+});
+const textsEl = document.getElementById("texts");
+beats.forEach((b) => (b.els = b.lines.map(() => { const e = document.createElement("div"); e.className = "ln"; textsEl.appendChild(e); return e; })));
+const $ = (id) => document.getElementById(id);
+const show = (el, on) => (el.style.display = on ? "block" : "none");
+
+function seam(el, x, y, w, h, op) {
+  if (op <= 0.001 || (w < 0.5 && h < 0.5)) return show(el, false);
+  show(el, true);
+  Object.assign(el.style, { left: x + "px", top: y + "px", width: Math.max(w, 2) + "px", height: Math.max(h, 2) + "px", opacity: op });
+}
+
+// a line of words: each word rises through its own mask, unblurs and settles its tracking (the luxury reveal)
+function lineFX(el, words, f, { y, size, out, fast, slow }) {
+  if (!words.length || f < words[0].t - 1 || f > out + 30) { el.style.display = "none"; return; }
+  el.style.display = "block";
+  const dur = fast ? 16 : slow ? 40 : 28;
+  let h = "";
+  words.forEach((wd, i) => {
+    const p = E.out(K.prog(f, wd.t, dur));
+    const q = E.exit(K.prog(f, out + i * 2, fast ? 10 : 16));
+    const ty = (1 - p) * 70 - q * 30;
+    const blur = (1 - p) * 10 + q * 8;
+    const op = K.clamp(p * 1.4) * (1 - q);
+    h += `<span style="overflow:hidden;padding:0.06em 0.05em 0.14em;margin:0 0.11em -0.14em;vertical-align:top"><span style="transform:translateY(${ty}%);opacity:${op}${blur > 0.05 ? `;filter:blur(${blur.toFixed(2)}px)` : ""}">${wd.w}</span></span>`;
+  });
+  el.innerHTML = h;
+  Object.assign(el.style, { top: y + "px", fontSize: size + "px", letterSpacing: "0.005em" });
+}
+
+const DRAW = 12, OPEN = 24;
+
+function seek(t) {
+  const f = Math.round(t * 60);
+  $("grain").src = `assets/grain${f % 6}.png`;
+
+  // camera breath on the drop: one push that settles critically
+  const punch = f >= 690 ? 1 + 0.05 * (1 - K.crit(f - 690, 0.12)) : 1;
+  $("imgs").style.transform = `scale(${punch})`;
+
+  let s1 = null, s2 = null;
+
+  // the opening: seam alone, then doors
+  if (f < 96) {
+    const h = 1480 * E.out(K.prog(f, 0, 70));
+    s1 = [CX - 1.5, 960 - h / 2, 3, h, 1];
+  }
+
+  scenes.forEach((s, i) => {
+    const vis = f >= s.from && f < s.to;
+    show(s.el, vis);
+    if (!vis) return;
+    const kp = s.push ? E.contact(K.prog(f, s.from, s.to - s.from)) : E.dolly(K.prog(f, s.from, s.to - s.from));
+    s.im.style.transform = `scale(${K.lmix(s.s[0], s.s[1], kp)})`;
+    let clip = "none", op = 1, filt = "none";
+    if (typeof s.open === "number") {
+      const p = E.inOut(K.prog(f, s.open + DRAW, OPEN));
+      const half = CX * p;
+      clip = f < s.open + DRAW ? `inset(0 ${CX}px 0 ${CX}px)` : `inset(0 ${CX - half}px 0 ${CX - half}px)`;
+      if (f >= s.open && p < 1) {
+        const d = E.out(K.prog(f, s.open, DRAW));
+        const fade = 1 - E.in(K.clamp(p * 1.15));
+        s1 = [CX - half - 1.5, 960 - (H * d) / 2, 3, H * d, fade];
+        s2 = [CX + half - 1.5, 960 - (H * d) / 2, 3, H * d, fade];
+      }
+    }
+    if (s.drain) {
+      // the gold drains out of the frame as the pain arrives
+      filt = `saturate(${1 - E.smooth(K.prog(f, 426, 40))})`;
+    }
+    if (i === 6) op = 1 - E.smooth(K.prog(f, 656, 14));
+    if (i === 14) op = 1;
+    s.el.style.opacity = op; s.el.style.clipPath = clip; s.el.style.zIndex = i; s.im.style.filter = filt;
+  });
+
+  // doors: open on the hall, close on the name
+  const dl = $("dl"), dr = $("dr");
+  const openP = E.cam(K.prog(f, 70, 70));
+  const closeP = E.inOut(K.prog(f, 1470, 34));
+  let ang = null;
+  if (f >= 40 && f < 150) ang = 104 * openP;
+  else if (f >= 1460) ang = 104 * (1 - closeP);
+  if (ang === null) { show(dl, false); show(dr, false); }
+  else {
+    show(dl, true); show(dr, true);
+    Object.assign(dl.style, { left: "0px", transformOrigin: "0% 50%", transform: `rotateY(${ang}deg)` });
+    Object.assign(dr.style, { left: "540px", transformOrigin: "100% 50%", transform: `rotateY(${-ang}deg)` });
+    // light between the doors
+    const gap = Math.sin((ang * Math.PI) / 180) * 540;
+    if (f < 150 && ang < 30) s1 = [CX - 1.5, 220, 3, 1480, 1 - ang / 30];
+    if (f >= 1460 && ang < 18) s1 = [CX - 1.5, 220 + (1 - ang / 18) * 0, 3, 1480, 1];
+    void gap;
+  }
+
+  // the one flood: the turn
+  const fl = f >= 684 ? K.hit(f - 690, 4, 10) : 0;
+  $("flood").style.opacity = Math.min(1, fl * 1.05);
+  // a closing pulse of light on the shutter
+  if (f >= 1040 && f < 1060) $("flood").style.opacity = Math.max(fl, K.hit(f - 1040, 1, 3) * 0.55);
+
+  // lockup: the seam collapses to a point of light, then draws out as the rule under the name
+  if (f >= 1504) {
+    const a = E.in(K.prog(f, 1504, 18)), b = E.out(K.prog(f, 1522, 30));
+    const h = 1480 * (1 - a) + 3 * a;
+    const y = K.lerp(220, 906, a);
+    const w = 3 + 417 * b;
+    s1 = [CX - w / 2, y, w, Math.max(3, h), 1];
+    s2 = null;
+  }
+  // the doors stay closed behind the name, their mouldings dimmed to a whisper
+  document.querySelectorAll(".mold, .handle").forEach((m) => (m.style.opacity = f >= 1500 ? 1 - 0.9 * E.smooth(K.prog(f, 1500, 40)) : 1));
+  if (s1) seam($("s1"), ...s1); else show($("s1"), false);
+  if (s2) seam($("s2"), ...s2); else show($("s2"), false);
+
+  // scrim only when there is text over a picture
+  $("scrim").style.opacity = f < 70 ? 0 : 1;
+
+  beats.forEach((b) => b.lines.forEach((ws, li) => {
+    const st = b.fast ? 3 : b.slow ? 10 : 6;
+    const words = ws.map((w, wi) => ({ t: b.t + li * 10 + wi * st, w }));
+    lineFX(b.els[li], words, f, { y: b.y + li * b.size * 1.04, size: b.size, out: b.out + li * 4, fast: b.fast, slow: b.slow });
+  }));
+
+  // the drop lockup: name in the flood
+  const mark = $("mark");
+  const nameDrop = f >= 696 && f < 800;
+  const nameEnd = f >= 1520;
+  if (nameDrop || nameEnd) {
+    show(mark, true);
+    const t0 = nameDrop ? 696 : 1520;
+    const p = E.out(K.prog(f, t0, 50));
+    const outp = nameDrop ? E.exit(K.prog(f, 772, 22)) : 0;
+    Object.assign(mark.style, {
+      top: (nameDrop ? 1420 : 760) + "px", fontSize: "118px",
+      letterSpacing: `${0.62 - 0.22 * p}em`, paddingLeft: `${0.62 - 0.22 * p}em`,
+      opacity: E.smooth(K.prog(f, t0, 30)) * (1 - outp), filter: `blur(${(1 - p) * 8 + outp * 6}px)`,
+    });
+  } else show(mark, false);
+  const fadeUp = (el, t0, top, t1 = 1e9) => {
+    if (f < t0 || f > t1 + 20) return show(el, false);
+    show(el, true);
+    const p = E.out(K.prog(f, t0, 34)), q = E.exit(K.prog(f, t1, 18));
+    Object.assign(el.style, { top: top + "px", opacity: p * (1 - q), transform: `translateY(${(1 - p) * 20}px)`, filter: `blur(${(1 - p) * 6}px)` });
+  };
+  fadeUp($("desc"), nameDrop ? 724 : 1548, nameDrop ? 1570 : 948, nameDrop ? 772 : 1e9);
+  fadeUp($("cta"), 1584, 1090);
+  fadeUp($("phone"), 1604, 1270);
+  fadeUp($("area"), 1614, 1352);
+}
+
+window.ready = () => seek(0);
+window.CUE_LIST = () => ({
+  seams: scenes.filter((s) => typeof s.open === "number").map((s) => s.open + DRAW),
+  doorOpen: 70, doorClose: 1500, slam: 426, toms: [546, 586, 626], drop: 690, silence: [672, 690],
+  shutter: 1040, peak: 1378, name: 1530, crystal: 112, glass: [806, 876, 946], stop: 1488,
+});
+if (location.hash === "#preview") {
+  const t0 = performance.now();
+  const loop = () => { seek(((performance.now() - t0) / 1000) % (END / 60)); requestAnimationFrame(loop); };
+  window.onload = loop;
+}
+</script>
+</body>
+</html>
