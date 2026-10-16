@@ -1,18 +1,84 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { disciplines } from "@/content/site";
+import { disciplines, type Discipline } from "@/content/site";
+import { tc } from "@/lib/titleCase";
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
+const rise = [0.16, 1, 0.3, 1] as const;
 
 /**
- * Pinned image on the left cross-fades as each discipline on the right
- * reaches the middle of the viewport. On small screens each discipline
- * carries its own image inline.
+ * Phones: each discipline is a full-screen scene pinned with CSS sticky
+ * inside one shared stack, so the next one slides up over it like a cut
+ * in a film. The scene underneath dims and recedes as it is covered.
  */
-export function Standard({ heading, intro }: { heading: React.ReactNode; intro: string }) {
+function Scene({
+  d,
+  i,
+  total,
+  progress,
+}: {
+  d: Discipline;
+  i: number;
+  total: number;
+  progress: MotionValue<number>;
+}) {
+  const isLast = i === total - 1;
+  // Scene i is covered while the stack scrolls from i/(total-1) to (i+1)/(total-1).
+  const start = i / (total - 1);
+  const end = Math.min(1, (i + 1) / (total - 1));
+  const scale = useTransform(progress, [start, end], [1, isLast ? 1 : 0.9]);
+  const dim = useTransform(progress, [start, end], [0, isLast ? 0 : 0.75]);
+  const imgScale = useTransform(progress, [Math.max(0, start - 1 / (total - 1)), start], [1.15, 1]);
+
+  return (
+    <motion.article
+      style={{ scale }}
+      className="sticky top-0 isolate flex h-[100svh] origin-top flex-col justify-end overflow-hidden"
+    >
+      <motion.div className="absolute inset-0 -z-10" style={{ scale: imgScale }}>
+        <Image src={d.image} alt={d.alt} fill sizes="100vw" className="object-cover" />
+      </motion.div>
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,rgba(14,14,18,0.97)_0%,rgba(14,14,18,0.72)_42%,rgba(14,14,18,0.1)_75%)]"
+      />
+
+      <div className="gutter relative pb-[max(96px,calc(env(safe-area-inset-bottom)+84px))]">
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 1, ease: rise }}
+        >
+          <p className="text-sm font-semibold text-ink-high">
+            {String(i + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </p>
+          <h3 className="mt-3 text-[3.25rem] leading-none tracking-tight">{tc(d.name)}</h3>
+          <p className="t-heading-md mt-4">{tc(d.line)}</p>
+          <p className="mt-4 max-w-[40ch] leading-relaxed text-ink-high">{d.body}</p>
+        </motion.div>
+      </div>
+      <motion.div aria-hidden className="pointer-events-none absolute inset-0 bg-base" style={{ opacity: dim }} />
+    </motion.article>
+  );
+}
+
+function MobileStack() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  return (
+    <div ref={ref} className="relative mt-[var(--space-xl)] lg:hidden">
+      {disciplines.map((d, i) => (
+        <Scene key={d.name} d={d} i={i} total={disciplines.length} progress={scrollYProgress} />
+      ))}
+    </div>
+  );
+}
+
+export function Standard({ heading, intro }: { heading: string; intro: string }) {
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLElement | null)[]>([]);
 
@@ -30,15 +96,27 @@ export function Standard({ heading, intro }: { heading: React.ReactNode; intro: 
   }, []);
 
   return (
-    <section id="standard" className="section scroll-mt-20 bg-base-raised">
+    <section id="standard" className="scroll-mt-20 bg-base-raised pt-[var(--space-section)] lg:pb-[var(--space-section)]">
       <div className="gutter">
-        <h2 className="t-heading-xl max-w-[16ch] text-balance">{heading}</h2>
+        <motion.h2
+          className="t-heading-xl max-w-[16ch] text-balance"
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease }}
+        >
+          {tc(heading)}
+        </motion.h2>
         <p className="t-body-lg mt-8 max-w-[56ch] text-ink-high">{intro}</p>
       </div>
 
-      <div className="gutter mt-[var(--space-xl)] grid gap-[var(--space-lg)] lg:grid-cols-12">
-        <div className="hidden lg:col-span-6 lg:block">
-          <div className="sticky top-[calc(50vh-34vh)] h-[68vh] overflow-hidden rounded-[4px]">
+      {/* Phones and tablets: stacked full-screen scenes */}
+      <MobileStack />
+
+      {/* Desktop: pinned image, scrolling copy */}
+      <div className="gutter mt-[var(--space-xl)] hidden gap-[var(--space-lg)] lg:grid lg:grid-cols-12">
+        <div className="lg:col-span-6">
+          <div className="sticky top-[16vh] h-[68vh] overflow-hidden rounded-[4px]">
             <AnimatePresence initial={false}>
               <motion.div
                 key={active}
@@ -76,17 +154,14 @@ export function Standard({ heading, intro }: { heading: React.ReactNode; intro: 
               ref={(el) => {
                 refs.current[i] = el;
               }}
-              className={`flex flex-col justify-center py-12 transition-opacity duration-700 lg:min-h-[62vh] lg:py-0 ${
-                i === active ? "lg:opacity-100" : "lg:opacity-35"
+              className={`flex min-h-[62vh] flex-col justify-center transition-opacity duration-700 ${
+                i === active ? "opacity-100" : "opacity-35"
               }`}
             >
-              <div className="relative mb-8 aspect-[4/3] overflow-hidden rounded-[4px] lg:hidden">
-                <Image src={d.image} alt={d.alt} fill sizes="100vw" className="object-cover" />
-              </div>
-              <h3 className="t-heading-xl">{d.name}</h3>
-              <p className="t-heading-md mt-4 text-ink">{d.line}</p>
+              <h3 className="t-heading-xl">{tc(d.name)}</h3>
+              <p className="t-heading-md mt-4 text-ink">{tc(d.line)}</p>
               <p className="mt-5 max-w-[46ch] leading-relaxed text-ink-high">{d.body}</p>
-              <ul className="mt-8 grid grid-cols-1 gap-x-6 gap-y-3 border-t border-line pt-6 text-[0.95rem] text-ink-high sm:grid-cols-2">
+              <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-line pt-6 text-[0.95rem] text-ink-high">
                 {d.items.map((it) => (
                   <li key={it}>{it}</li>
                 ))}

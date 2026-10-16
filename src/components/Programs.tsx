@@ -1,6 +1,7 @@
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { cta } from "@/content/site";
 import { Reveal } from "./Reveal";
+import { tc } from "@/lib/titleCase";
 
 export type Program = {
   name: string;
@@ -29,7 +30,7 @@ export function Programs({
   return (
     <section id="programs" className="gutter section scroll-mt-20">
       <Reveal>
-        <h2 className="t-heading-xl max-w-[16ch] text-balance">{heading}</h2>
+        <h2 className="t-heading-xl max-w-[16ch] text-balance">{tc(heading)}</h2>
       </Reveal>
       <Reveal delay={0.1}>
         <p className="t-body-lg mt-8 max-w-[58ch] text-ink-high">{intro}</p>
@@ -43,7 +44,7 @@ export function Programs({
             className="grid gap-6 border-t border-line-strong py-10 md:grid-cols-12 md:gap-8 md:py-14"
           >
             <div className="md:col-span-4">
-              <h3 className="t-heading-lg">{p.name}</h3>
+              <h3 className="t-heading-lg">{tc(p.name)}</h3>
               <p className="mt-3 max-w-[32ch] leading-relaxed text-ink-high">{p.forWho}</p>
             </div>
             <div className="md:col-span-5">

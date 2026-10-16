@@ -87,6 +87,10 @@ body {
   letter-spacing: -0.02em;
   font-weight: 400;
 }
+.t-hero {
+  font-size: clamp(2.75rem, 4.4vw + 1.2rem, 6.25rem);
+  line-height: 1.02;
+}
 .t-heading-xl {
   font-size: clamp(2rem, 2.6vw + 1rem, 4rem);
   line-height: 1.06;
@@ -169,6 +173,16 @@ body {
   transform: translateX(4px);
 }
 
+}
+
+/* Hero art direction: separate focal point for portrait screens */
+.hero-img {
+  object-position: var(--pos);
+}
+@media (max-width: 767px) {
+  .hero-img {
+    object-position: var(--pos-m);
+  }
 }
 
 /* Marquee (single use, materials strip) */

@@ -1,4 +1,5 @@
 import { Reveal } from "./Reveal";
+import { tc } from "@/lib/titleCase";
 
 /** Names the reader's frustrations in their own words, then answers each. */
 export function PainGrid({
@@ -15,7 +16,7 @@ export function PainGrid({
       <div className="grid gap-[var(--space-lg)] lg:grid-cols-12">
         <div className="lg:col-span-5">
           <Reveal>
-            <h2 className="t-heading-xl max-w-[14ch] text-balance">{heading}</h2>
+            <h2 className="t-heading-xl max-w-[14ch] text-balance">{tc(heading)}</h2>
           </Reveal>
           <Reveal delay={0.1}>
             <p className="t-body-lg mt-8 max-w-[44ch] text-ink-high">{intro}</p>

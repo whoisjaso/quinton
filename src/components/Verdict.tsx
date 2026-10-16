@@ -1,5 +1,7 @@
 import type { Stat } from "@/content/site";
 import { Reveal } from "./Reveal";
+import { CountUp } from "./CountUp";
+import { tc } from "@/lib/titleCase";
 
 /** The pain statement and the evidence behind it. */
 export function Verdict({
@@ -14,7 +16,7 @@ export function Verdict({
   return (
     <section className="gutter section">
       <Reveal>
-        <h2 className="t-heading-xl max-w-[18ch] text-balance">{headline}</h2>
+        <h2 className="t-heading-xl max-w-[18ch] text-balance">{tc(headline)}</h2>
       </Reveal>
       <Reveal delay={0.1}>
         <p className="t-body-lg mt-8 max-w-[60ch] text-ink-high">{body}</p>
@@ -28,8 +30,8 @@ export function Verdict({
             className="flex flex-col border-l border-line-strong pl-6 pr-6"
           >
             <dt className="order-2 mt-4 text-[0.95rem] leading-relaxed text-ink-high">{s.claim}</dt>
-            <dd className="order-1 text-[clamp(2.75rem,3.2vw+1.5rem,4.5rem)] leading-none tracking-tight">
-              {s.value}
+            <dd className="order-1 text-[clamp(3.25rem,3.2vw+1.5rem,4.5rem)] leading-none tracking-tight">
+              <CountUp value={s.value} />
             </dd>
             <dd className="order-3 mt-4">
               <a

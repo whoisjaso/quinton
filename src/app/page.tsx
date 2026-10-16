@@ -22,9 +22,10 @@ export default function Home() {
           image="/images/hero-estate-dusk.jpg"
           alt="Modern residence at dusk behind a level, freshly cut lawn and a mature eucalyptus"
           objectPosition="50% 60%"
+          mobilePosition="42% 50%"
           headline="Your property speaks before you do."
-          sub="Grounds, surfaces and storefronts kept to a standard most crews never reach. One team. One point of contact."
-          secondary={{ label: "See the standard", href: "#standard" }}
+          sub="Lawn care, power washing and storefront cleaning, kept to a standard most crews never reach. One team. One point of contact."
+          secondary={{ label: "See the Standard", href: "#standard" }}
         />
 
         <AudienceSplit />

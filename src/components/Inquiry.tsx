@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CheckCircle, CircleNotch } from "@phosphor-icons/react";
 import { brand, cta } from "@/content/site";
+import { tc } from "@/lib/titleCase";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -80,7 +81,7 @@ export function Inquiry({
     <section id="walkthrough" className="section scroll-mt-16 border-t border-line">
       <div className="gutter grid gap-[var(--space-lg)] lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <h2 className="t-heading-xl max-w-[12ch] text-balance">{heading}</h2>
+          <h2 className="t-heading-xl max-w-[12ch] text-balance">{tc(heading)}</h2>
           <p className="t-body-lg mt-8 max-w-[40ch] text-ink-high">{sub}</p>
           <dl className="mt-10 space-y-5 text-[0.95rem]">
             <div>
@@ -121,7 +122,7 @@ export function Inquiry({
                 role="status"
               >
                 <CheckCircle size={40} weight="light" />
-                <p className="t-heading-lg mt-6">Request received.</p>
+                <p className="t-heading-lg mt-6">Request Received.</p>
                 <p className="mt-3 max-w-[44ch] leading-relaxed text-ink-high">
                   We will contact you {brand.responseWindow} to schedule the walkthrough.
                 </p>

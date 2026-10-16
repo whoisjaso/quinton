@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Reveal } from "./Reveal";
+import { tc } from "@/lib/titleCase";
 
 type Moment = { title: string; body: string; image: string; alt: string };
 
@@ -13,7 +14,7 @@ export function Moments({ items }: { items: [Moment, Moment] }) {
             <div className={`relative overflow-hidden rounded-[4px] ${i === 0 ? "aspect-[4/3]" : "aspect-[4/5]"}`}>
               <Image src={m.image} alt={m.alt} fill sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
             </div>
-            <h3 className="t-heading-lg mt-8">{m.title}</h3>
+            <h3 className="t-heading-lg mt-8">{tc(m.title)}</h3>
             <p className="mt-3 max-w-[48ch] leading-relaxed text-ink-high">{m.body}</p>
           </Reveal>
         ))}

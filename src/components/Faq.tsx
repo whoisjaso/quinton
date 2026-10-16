@@ -5,7 +5,7 @@ export function Faq({ items }: { items: { q: string; a: string }[] }) {
   return (
     <section className="gutter section grid gap-[var(--space-lg)] lg:grid-cols-12">
       <Reveal className="lg:col-span-4">
-        <h2 className="t-heading-xl">Questions, answered plainly.</h2>
+        <h2 className="t-heading-xl">Questions, Answered Plainly.</h2>
       </Reveal>
       <div className="lg:col-span-7 lg:col-start-6">
         {items.map((f) => (

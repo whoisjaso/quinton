@@ -27,10 +27,11 @@ export default function Commercial() {
           image="/images/storefront.jpg"
           alt="Painted storefront with clean display windows on a swept cobblestone street"
           objectPosition="50% 45%"
+          mobilePosition="56% 50%"
           eyebrow="Commercial properties"
           headline="Your storefront is selling. Or it is not."
-          sub="Sidewalks, entries, facades and grounds kept customer ready on a schedule, with reports for owners and managers."
-          secondary={{ label: "View commercial programs", href: "#programs" }}
+          sub="Power washing and grounds care that keep sidewalks, entries and storefronts customer ready, with reports for owners."
+          secondary={{ label: "View Programs", href: "#programs" }}
         />
 
         <Verdict

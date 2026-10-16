@@ -10,9 +10,9 @@ export const brand = {
   /** Leader of the business, used in copy about the point of contact. */
   principal: "Quinton",
   /** e.g. "Greater Houston" or "Dallas, Highland Park and University Park". */
-  serviceArea: "",
+  serviceArea: "Greater Houston",
   /** Display phone, e.g. "(713) 555-0142". Leave empty to hide. */
-  phone: "",
+  phone: "(281) 788-6172",
   email: "",
   /** Set when there are real reviews or credentials to show. */
   insuredStatement: "Fully insured. Certificates issued on request.",
@@ -22,15 +22,15 @@ export const brand = {
 };
 
 export const nav = [
-  { href: "/estates", label: "Private estates" },
+  { href: "/estates", label: "Private Estates" },
   { href: "/commercial", label: "Commercial" },
-  { href: "/#standard", label: "The standard" },
+  { href: "/#standard", label: "The Standard" },
   { href: "/#programs", label: "Programs" },
 ];
 
 export const cta = {
   /** One label for the contact intent, used everywhere. */
-  primary: "Request a walkthrough",
+  primary: "Request a Walkthrough",
   href: "#walkthrough",
 };
 
@@ -104,17 +104,17 @@ export type Discipline = {
 export const disciplines: Discipline[] = [
   {
     name: "Grounds",
-    line: "Turf, hedges and beds held to a line.",
-    body: "Mowing heights set by season and species. Edges cut by hand at every visit. Hedges shaped to a consistent profile, beds kept defined and weed free.",
-    items: ["Turf care and striping", "Hand edging", "Hedge and shrub shaping", "Bed definition and mulch"],
+    line: "Mowing, edging and hedges held to a line.",
+    body: "Lawns mowed at the right height for the season and the grass. Edges cut by hand at every visit. Hedges shaped to a consistent profile, beds kept defined and weed free.",
+    items: ["Lawn mowing and striping", "Hand edging", "Hedge and shrub shaping", "Bed definition and mulch"],
     image: "/images/turf-macro.jpg",
     alt: "Close view of dense, freshly cut turf in front of a modern building",
   },
   {
     name: "Surfaces",
-    line: "Pressure matched to the material.",
+    line: "Power washing, matched to the material.",
     body: "Stone, brick, stucco, pavers and painted finishes are cleaned with the right pressure and the right chemistry. Nothing etched, stripped or streaked.",
-    items: ["Soft washing for facades and roofs", "Paver, travertine and stone decks", "Driveways and motor courts", "Pool surrounds and terraces"],
+    items: ["Power washing and soft washing", "Paver, travertine and stone decks", "Driveways and motor courts", "Pool surrounds and terraces"],
     image: "/images/hardscape-pool-deck.jpg",
     alt: "Clean stone pool deck and spa beside a stucco residence at sunset",
   },

@@ -4,7 +4,7 @@ import { Wordmark } from "./Wordmark";
 
 export function Footer() {
   return (
-    <footer className="gutter border-t border-line pb-10 pt-[var(--space-xl)]">
+    <footer className="gutter border-t border-line pb-28 pt-[var(--space-xl)] md:pb-10">
       <div className="flex flex-col gap-12 md:flex-row md:items-start md:justify-between">
         <div className="flex flex-col items-start">
           <div className="-ml-0">

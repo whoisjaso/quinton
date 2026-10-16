@@ -28,10 +28,11 @@ export default function Estates() {
           image="/images/modern-dusk-lawn.jpg"
           alt="Contemporary home at dusk with lit windows above a sloped, manicured lawn"
           objectPosition="50% 55%"
+          mobilePosition="48% 50%"
           eyebrow="Private estates"
           headline="The estate, handled."
-          sub="Grounds and exterior surfaces maintained by one accountable team, so you never manage a crew again."
-          secondary={{ label: "View estate programs", href: "#programs" }}
+          sub="Lawn care, hedges and power washing handled by one accountable team, so you never manage a crew again."
+          secondary={{ label: "View Programs", href: "#programs" }}
         />
 
         <PainGrid

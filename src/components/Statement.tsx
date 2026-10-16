@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
+import { tc } from "@/lib/titleCase";
 
 /** Full bleed image with one sentence. A pause between dense sections. */
 export function Statement({ image, alt, children }: { image: string; alt: string; children: React.ReactNode }) {
@@ -24,7 +25,7 @@ export function Statement({ image, alt, children }: { image: string; alt: string
           viewport={{ once: true, margin: "0px 0px -20% 0px" }}
           transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          {children}
+          {tc(children)}
         </motion.p>
       </div>
     </section>
