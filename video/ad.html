@@ -1,0 +1,238 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Quinton Ad</title>
+<style>
+  @font-face { font-family: "Archivo"; src: url("archivo.woff2") format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; }
+  html, body { margin: 0; background: #0e0e12; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #0e0e12; font-family: "Archivo", Arial, sans-serif; color: #fbfcff; }
+  #imgs, #texts { position: absolute; inset: 0; }
+  .img { position: absolute; inset: 0; overflow: hidden; display: none; }
+  .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+  .shade { position: absolute; inset: 0; pointer-events: none; }
+  .ln { position: absolute; left: 90px; right: 60px; white-space: nowrap; line-height: 1.04; text-align: left; }
+  .rule { position: absolute; height: 3px; background: #fbfcff; display: none; }
+  #flash { position: absolute; inset: 0; background: #fbfcff; opacity: 0; pointer-events: none; }
+  #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(14,14,18,0.55) 100%); }
+  #grain { position: absolute; inset: -50%; width: 200%; height: 200%; pointer-events: none; opacity: 0.07; mix-blend-mode: overlay; }
+  #big { position: absolute; left: 82px; font-weight: 400; letter-spacing: -0.04em; line-height: 1; display: none; font-variant-numeric: tabular-nums; }
+  #mark { position: absolute; left: 0; right: 0; text-align: center; font-weight: 600; text-transform: uppercase; font-stretch: 125%; display: none; }
+  .small { position: absolute; left: 90px; font-size: 30px; color: #afb0b3; display: none; }
+  .center { position: absolute; left: 0; right: 0; text-align: center; display: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="imgs"></div>
+  <div class="shade" id="scrim" style="background:linear-gradient(to bottom, rgba(14,14,18,0.35) 0%, rgba(14,14,18,0.1) 28%, rgba(14,14,18,0.55) 44%, rgba(14,14,18,0.72) 66%, rgba(14,14,18,0.45) 100%)"></div>
+  <div id="texts"></div>
+  <div id="big"></div>
+  <div class="small" id="src">Morpace Consumer Survey</div>
+  <div id="mark">Quinton</div>
+  <div class="center" id="desc" style="font-size:30px;letter-spacing:0.3em;text-transform:uppercase;color:#88898c">Estate &amp; Commercial Grounds</div>
+  <div class="center" id="cta" style="font-size:54px;font-weight:600">
+    <span style="display:inline-block;background:#fbfcff;color:#0e0e12;border-radius:6px;padding:30px 54px">Request a Walkthrough</span>
+  </div>
+  <div class="center" id="phone" style="font-size:46px;color:#fbfcff">(281) 788-6172</div>
+  <div class="center" id="area" style="font-size:30px;color:#88898c;letter-spacing:0.08em">Greater Houston</div>
+  <div class="rule" id="r1"></div>
+  <div class="rule" id="r2"></div>
+  <div id="flash"></div>
+  <div id="vignette"></div>
+  <svg id="grain" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence id="turb" type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="1" /></filter><rect width="100%" height="100%" filter="url(#n)" /></svg>
+</div>
+<script src="kit.js"></script>
+<script>
+/* Quinton, 25 s at 60 fps (1500 frames), 1080x1920.
+   Idea: let the outside close the sale.
+   Device: one white hairline (a hand-cut edge). It draws, splits open into each scene,
+   underlines the money word, and lands under the wordmark.
+   Grammar: problem in grayscale, answer in colour, ending repeats the opening storefront in colour. */
+const W = 1080, H = 1920, END = 1500;
+const IMG = (n) => `../public/images/${n}.jpg`;
+const E = K.E;
+
+const NEGLECT = "grayscale(1) brightness(0.48) contrast(1.15)";
+const COLOR = "saturate(1.05) brightness(0.72) contrast(1.05)";
+const DIM = "grayscale(1) brightness(0.3) contrast(1.1)";
+
+// Scenes. open = frame the slit transition starts (null = fade in), y = where the slit opens.
+const scenes = [
+  { img: "storefront",          from: 0,    to: 216,  open: null, filter: DIM,     pos: "50% 50%", s: [1.22, 1.08] },
+  { img: "storefront",          from: 192,  to: 410,  open: 192,  y: 1090, filter: NEGLECT, pos: "45% 60%", s: [1.08, 1.0] },
+  { img: "storefront",          from: 384,  to: 452,  open: 384,  y: 1180, filter: NEGLECT, pos: "40% 100%", s: [1.9, 1.75] },
+  { img: "modern-entry-drive",  from: 429,  to: 497,  open: 429,  y: 1180, filter: NEGLECT, pos: "50% 85%", s: [1.35, 1.22] },
+  { img: "garden-path",         from: 474,  to: 552,  open: 474,  y: 1180, filter: NEGLECT, pos: "50% 60%", s: [1.3, 1.18] },
+  { img: "towers",              from: 660,  to: 816,  open: null, cut: true, filter: "grayscale(1) brightness(0.32) contrast(1.2)", pos: "50% 50%", s: [1.18, 1.04] },
+  { img: "turf-macro",          from: 792,  to: 870,  open: 792,  y: 1236, filter: COLOR, pos: "50% 70%", s: [1.25, 1.12] },
+  { img: "hardscape-pool-deck", from: 846,  to: 924,  open: 846,  y: 1180, filter: COLOR, pos: "30% 60%", s: [1.25, 1.12] },
+  { img: "storefront",          from: 900,  to: 978,  open: 900,  y: 1180, filter: COLOR, pos: "50% 50%", s: [1.2, 1.08] },
+  { img: "hero-estate-dusk",    from: 954,  to: 1050, open: 954,  y: 1180, filter: COLOR, pos: "42% 50%", s: [1.18, 1.04] },
+  { img: "hands-pruning",       from: 1032, to: 1194, open: null, cut: true, filter: COLOR, pos: "35% 50%", s: [1.16, 1.04] },
+  { img: "storefront",          from: 1170, to: 1300, open: 1170, y: 1180, filter: "saturate(1.08) brightness(0.8)", pos: "50% 50%", s: [1.22, 1.08] },
+];
+
+// Text beats: lines of words, rise in with a stagger, rise out at `out`.
+const beats = [
+  { t: 62,   out: 100,  lines: [["They", "Judge"], ["the", "Outside"]], y: 830, size: 120 },
+  { t: 112,  out: 180,  lines: [["Before", "They"], ["Walk", "In."]], y: 830, size: 120 },
+  { t: 262,  out: 372,  lines: [["Have", "Avoided", "a", "Business"], ["Because", "It", "Looked", "Dirty."]], y: 1150, size: 64 },
+  { t: 398,  out: 430,  lines: [["Gum", "on", "the", "Walk."]], y: 1040, size: 112 },
+  { t: 443,  out: 475,  lines: [["Stained", "Entries."]], y: 1040, size: 112 },
+  { t: 488,  out: 538,  lines: [["Overgrown", "Beds."]], y: 1040, size: 112 },
+  { t: 552,  out: 636,  lines: [["That", "Is", "Not"], ["a", "Cleaning"], ["Problem."]], y: 760, size: 120 },
+  { t: 660,  out: 780,  lines: [["It", "Is", "a"]], y: 720, size: 92, stagger: 2 },
+  { t: 664,  out: 780,  lines: [["Revenue"]], y: 830, size: 236, stagger: 2 },
+  { t: 672,  out: 780,  lines: [["Problem."]], y: 1090, size: 120, stagger: 2 },
+  { t: 806,  out: 840,  lines: [["Lawn", "Care."]], y: 1040, size: 120 },
+  { t: 860,  out: 894,  lines: [["Power", "Washing."]], y: 1040, size: 120 },
+  { t: 914,  out: 948,  lines: [["Storefronts."]], y: 1040, size: 120 },
+  { t: 968,  out: 1004, lines: [["One", "Team."], ["One", "Standard."]], y: 960, size: 120 },
+  { t: 1046, out: 1150, lines: [["A", "Photo", "Report"], ["After", "Every", "Visit."]], y: 1000, size: 104 },
+  { t: 1186, out: 1282, lines: [["Let", "the", "Outside"], ["Close", "the", "Sale."]], y: 930, size: 120 },
+];
+
+// Build DOM
+const imgsEl = document.getElementById("imgs");
+scenes.forEach((s) => {
+  const d = document.createElement("div"); d.className = "img";
+  const im = document.createElement("img"); im.src = IMG(s.img); im.style.objectPosition = s.pos; im.style.filter = s.filter;
+  d.appendChild(im); imgsEl.appendChild(d); s.el = d; s.im = im;
+});
+const textsEl = document.getElementById("texts");
+beats.forEach((b) => {
+  b.els = b.lines.map(() => { const e = document.createElement("div"); e.className = "ln"; textsEl.appendChild(e); return e; });
+});
+const $ = (id) => document.getElementById(id);
+const show = (el, on) => (el.style.display = on ? "block" : "none");
+
+function rule(el, x, y, w, op = 1) {
+  if (w <= 0.5 || op <= 0) return show(el, false);
+  show(el, true);
+  Object.assign(el.style, { left: x + "px", top: y - 1.5 + "px", width: w + "px", opacity: op });
+}
+
+// Slit transition: line draws across at y (10 f), then splits open to the frame edges (18 f).
+const DRAW = 10, OPEN = 18;
+function slit(f, s) {
+  const p = E.inOut(K.prog(f, s.open + DRAW, OPEN));
+  const top = s.y * (1 - p), bot = s.y + (H - s.y) * p;
+  return { top, bot, p };
+}
+
+function seek(t) {
+  const f = Math.round(t * 60);
+  document.getElementById("turb").setAttribute("seed", String(f % 97));
+
+  // drop punch: the whole stage pushes in on the downbeat and settles
+  const punch = f >= 660 ? 1 + 0.07 * (1 - K.crit(f - 660, 0.2)) : 1;
+  $("imgs").style.transform = `scale(${punch})`;
+  $("texts").style.transform = `scale(${1 + (punch - 1) * 0.6})`;
+
+  // images
+  let r1 = null, r2 = null;
+  scenes.forEach((s, i) => {
+    const vis = f >= s.from && f < s.to;
+    show(s.el, vis);
+    if (!vis) return;
+    const kp = E.dolly(K.prog(f, s.from, s.to - s.from));
+    s.im.style.transform = `scale(${K.lmix(s.s[0], s.s[1], kp)})`;
+    let op = 1, clip = "none";
+    if (s.open == null && !s.cut) op = E.smooth(K.prog(f, s.from, 40));
+    if (s.open != null) {
+      const { top, bot, p } = slit(f, s);
+      clip = `inset(${top}px 0 ${H - bot}px 0)`;
+      if (f < s.open + DRAW) clip = `inset(${s.y}px 0 ${H - s.y}px 0)`;
+      if (p < 1 && f >= s.open) {
+        const draw = E.out(K.prog(f, s.open, DRAW));
+        const fade = 1 - E.in(K.clamp(p * 1.1));
+        r1 = [0, top, W * draw, fade];
+        r2 = [0, bot, W * draw, fade];
+      }
+    }
+    // fade the last image to black before the rehook and the end card
+    if (i === 4) op *= 1 - E.smooth(K.prog(f, 528, 24));
+    if (i === 11) op *= 1 - E.smooth(K.prog(f, 1270, 30));
+    s.el.style.opacity = op;
+    s.el.style.clipPath = clip;
+    s.el.style.zIndex = i;
+  });
+
+  // device outside transitions
+  // 1. the hook: the line draws under "the Outside" and holds until it opens the stat scene
+  if (f < 192) {
+    const d = E.out(K.prog(f, 14, 46));
+    const out = f >= 186 ? 1 : 0;
+    r1 = [90, 1090, 900 * d, 1 - out];
+  }
+  // 2. underline the money word, then stretch to full width and open into colour
+  if (f >= 694 && f < 792) {
+    const d = E.out(K.prog(f, 694, 26));
+    const stretch = E.inOut(K.prog(f, 770, 22));
+    const w0 = K.measure("Revenue", K.font(236, 400, "Archivo"), -0.03, 236);
+    r1 = [90 * (1 - stretch), 1068 + (1236 - 1068) * stretch, (w0 + (W - w0) * stretch) * d, 1];
+  }
+  if (r1) rule($("r1"), ...r1); else show($("r1"), false);
+  if (r2) rule($("r2"), ...r2); else show($("r2"), false);
+
+  // text
+  beats.forEach((b) => {
+    b.lines.forEach((ws, li) => {
+      const st = b.stagger ?? 5;
+      const words = ws.map((w, wi) => ({ t: b.t + li * 7 + wi * st, w }));
+      K.maskLine(b.els[li], words, f, { y: b.y + li * b.size * 1.06, size: b.size, wt: 400, fam: "Archivo", track: -0.03, color: "#fbfcff", accent: "#fbfcff", out: b.out + li * 3, stagger: 4 });
+    });
+  });
+
+  // the stat
+  const big = $("big");
+  if (f >= 226 && f < 392) {
+    show(big, true);
+    const n = Math.round(52 * E.out(K.prog(f, 230, 60)));
+    const inn = E.out(K.prog(f, 226, 18)), outp = E.in(K.prog(f, 372, 16));
+    Object.assign(big.style, { top: "760px", fontSize: "380px", opacity: inn * (1 - outp), transform: `translateY(${(1 - inn) * 60 - outp * 60}px)` });
+    big.textContent = n + "%";
+  } else show(big, false);
+  const src = $("src");
+  if (f >= 300 && f < 384) { show(src, true); Object.assign(src.style, { top: "1330px", opacity: E.smooth(K.prog(f, 300, 20)) * (1 - E.in(K.prog(f, 370, 12))) }); } else show(src, false);
+
+  // flashes: camera shutter on the report, white hit on the drop
+  const fl = Math.max(K.hit(f - 660, 1, 4) * 0.5, K.hit(f - 1032, 1, 3) * 0.9, K.hit(f - 1112, 1, 3) * 0.75);
+  $("flash").style.opacity = fl;
+
+  // end card: wordmark rises, the line lands under it, then the ask
+  const mark = $("mark");
+  if (f >= 1296) {
+    show(mark, true);
+    const p = E.out(K.prog(f, 1300, 40));
+    Object.assign(mark.style, { top: "712px", fontSize: "100px", letterSpacing: `${0.52 - 0.18 * p}em`, paddingLeft: `${0.52 - 0.18 * p}em`, opacity: E.smooth(K.prog(f, 1300, 24)), transform: `translateY(${(1 - p) * 30}px)` });
+    const d = E.out(K.prog(f, 1328, 36));
+    rule($("r1"), (W - 440 * d) / 2, 872, 440 * d, 1);
+  }
+  else show(mark, false);
+  const fadeUp = (el, t0, top) => {
+    if (f < t0) return show(el, false);
+    show(el, true);
+    const p = E.out(K.prog(f, t0, 30));
+    Object.assign(el.style, { top: top + "px", opacity: p, transform: `translateY(${(1 - p) * 24}px)` });
+  };
+  fadeUp($("desc"), 1350, 920);
+  fadeUp($("cta"), 1384, 1080);
+  fadeUp($("phone"), 1404, 1270);
+  fadeUp($("area"), 1416, 1340);
+}
+
+window.ready = () => seek(0);
+window.CUE_LIST = () => ({
+  whoosh: scenes.filter((s) => s.open != null).map((s) => s.open + DRAW + OPEN / 2),
+  drop: 660, silence: [642, 660], shutter: [1032, 1112], name: 1300,
+});
+if (location.hash === "#preview") {
+  let t0 = performance.now();
+  const loop = () => { const t = ((performance.now() - t0) / 1000) % (END / 60); seek(t); requestAnimationFrame(loop); };
+  window.onload = loop;
+}
+</script>
+</body>
+</html>

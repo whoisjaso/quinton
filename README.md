@@ -37,3 +37,16 @@ All images are from Unsplash under the Unsplash License (free for commercial use
 ## Statistics
 
 Every stat on the site links to its source. See `stats` in `src/content/site.ts`. Do not add numbers without a source.
+
+## Ad film
+
+`video/` holds the 25 second vertical ad (1080x1920, 60 fps) built as code: `ad.html` is a pure function of the frame number, `render.mjs` screenshots every frame with Playwright, `mix.py` places the music and effects on the picture cues and masters to -14 LUFS.
+
+```bash
+cd video
+node render.mjs /tmp/frames 8            # 1500 PNG frames + cues.json
+python3 mix.py /tmp/frames/cues.json /tmp # ad-mix.wav and ad-fx-only.wav
+ffmpeg -framerate 60 -i /tmp/frames/f%05d.png -i /tmp/ad-mix.wav -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p -c:a aac -b:a 192k -shortest renders/quinton-ad.mp4
+```
+
+Open `ad.html#preview` in a browser for a live preview. Music: "The Journey" from Mixkit. Effects: Mixkit. Both under the Mixkit free license.
