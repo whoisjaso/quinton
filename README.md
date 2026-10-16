@@ -71,3 +71,13 @@ cd video/v3
 HTML=thought.html END=1800 node ../render.mjs /tmp/v3 8
 python3 mix_thought.py /tmp/v3/cues.json /tmp
 ```
+
+### Ad v4: "The Thread" (SMS conversation, seamless loop)
+
+`video/v4/` holds a 30 second text-thread ad built from real Reddit pain points (no-show crews, unanswered texts, "Read" with no reply). Calm motion only: texts are typed in the composer with keyboard taps, sent, and the thread eases up; a swipe moves to Quinton's thread, who reports in with photos. Voiceover is Kokoro af_heart through the voice chain. Frame 1799 flows into frame 0.
+
+```bash
+cd video/v4
+HTML=thread.html END=1800 node ../render.mjs /tmp/v4 8
+python3 mix_thread.py /tmp/v4/cues.json /tmp
+```
