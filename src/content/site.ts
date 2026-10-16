@@ -18,7 +18,7 @@ export const brand = {
   insuredStatement: "Fully insured. Certificates issued on request.",
   /** Promise in the inquiry section. Keep it true. */
   responseWindow: "within one business day",
-  siteUrl: "https://example.com",
+  siteUrl: "https://quinton-iota.vercel.app",
 };
 
 export const nav = [
