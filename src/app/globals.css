@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+/*
+  Design tokens. Values follow the Porsche Design System dark theme
+  (base #0E0E12, surface #212225, contrast scale, 4px radius, motion easing),
+  applied natively. This is an interpretation, not the official package.
+*/
+:root {
+  --base: #0e0e12;
+  --base-raised: #141419;
+  --surface: #212225;
+  --ink: #fbfcff;
+  --ink-high: #afb0b3;
+  --ink-medium: #88898c;
+  --line: #2b2c31;
+  --line-strong: #404044;
+  --focus: #6e8bff;
+  --shade: rgba(14, 14, 18, 0.72);
+
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --gutter: max(20px, min(10.625vw - 12px, 168px));
+  --space-section: clamp(80px, 7.5vw + 56px, 184px);
+  --space-xl: clamp(48px, 3vw + 38px, 96px);
+  --space-lg: clamp(32px, 2.75vw + 23px, 76px);
+  --space-md: clamp(16px, 1.25vw + 12px, 36px);
+}
+
+@theme inline {
+  --color-base: var(--base);
+  --color-base-raised: var(--base-raised);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-high: var(--ink-high);
+  --color-ink-medium: var(--ink-medium);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --font-sans: var(--font-archivo), "Arial Narrow", Arial, sans-serif;
+  --ease-porsche: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --radius-sm: 4px;
+}
+
+html {
+  background: var(--base);
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--base);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "kern";
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--base);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@layer components {
+/* Layout primitives */
+.gutter {
+  padding-inline: var(--gutter);
+}
+.section {
+  padding-block: var(--space-section);
+}
+
+/* Type scale (fluid, regular weight for display per PDS guidance) */
+.t-display {
+  font-size: clamp(2.5rem, 4.4vw + 1rem, 6.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+}
+.t-heading-xl {
+  font-size: clamp(2rem, 2.6vw + 1rem, 4rem);
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+}
+.t-heading-lg {
+  font-size: clamp(1.5rem, 1.1vw + 1.1rem, 2.25rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+.t-heading-md {
+  font-size: clamp(1.15rem, 0.5vw + 1rem, 1.45rem);
+  line-height: 1.3;
+  font-weight: 600;
+}
+.t-body-lg {
+  font-size: clamp(1.05rem, 0.35vw + 0.98rem, 1.25rem);
+  line-height: 1.6;
+}
+.t-label {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Buttons: 4px radius, color-only hover, tactile press */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 52px;
+  padding: 0 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background-color 0.25s var(--ease),
+    color 0.25s var(--ease),
+    border-color 0.25s var(--ease),
+    transform 0.15s var(--ease);
+}
+.btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+.btn-primary {
+  background: var(--ink);
+  color: var(--base);
+}
+.btn-primary:hover {
+  background: #d8d8db;
+}
+.btn-secondary {
+  border: 1px solid rgba(251, 252, 255, 0.45);
+  color: var(--ink);
+  background: rgba(14, 14, 18, 0.24);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.btn-secondary:hover {
+  background: rgba(251, 252, 255, 0.12);
+  border-color: var(--ink);
+}
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+.link-arrow svg {
+  transition: transform 0.4s var(--ease);
+}
+.link-arrow:hover svg {
+  transform: translateX(4px);
+}
+
+}
+
+/* Marquee (single use, materials strip) */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 60s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* FAQ disclosure */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .faq-icon {
+  transform: rotate(45deg);
+}
+.faq-icon {
+  transition: transform 0.4s var(--ease);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
