@@ -50,3 +50,14 @@ ffmpeg -framerate 60 -i /tmp/frames/f%05d.png -i /tmp/ad-mix.wav -c:v libx264 -c
 ```
 
 Open `ad.html#preview` in a browser for a live preview. Music: Mixkit track #797. Effects: Mixkit. Both under the Mixkit free license.
+
+### Ad v2: "The First Room" (luxury cut, seamless loop)
+
+`video/lux/` holds the 30 second opulent cut: gold engravings of Versailles (Met Open Access, CC0) and gilded estate photography, a door-seam of gold light as the device, CC0 sound design from Freesound. Frame 1799 flows into frame 0, so it loops without a seam on Instagram. Credits in `video/lux/CREDITS.md`.
+
+```bash
+cd video/lux
+python3 prep.py                                      # gilded assets (needs the Met originals, see CREDITS.md)
+HTML=lux.html END=1800 node ../render.mjs /tmp/lux 8  # 1800 frames
+python3 mix_lux.py /tmp                              # lux-mix.wav, lux-fx-only.wav
+```
