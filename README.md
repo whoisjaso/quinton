@@ -61,3 +61,13 @@ python3 prep.py                                      # gilded assets (needs the 
 HTML=lux.html END=1800 node ../render.mjs /tmp/lux 8  # 1800 frames
 python3 mix_lux.py /tmp                              # lux-mix.wav, lux-fx-only.wav
 ```
+
+### Ad v3: "One Thought" (emotional, future-paced, seamless loop)
+
+`video/v3/` holds the 30 second cut built from prompt-motion.com decodes ("Food craving" launch film: inner monologue in, future-paced result out, one continuous take; "Overthinking": one dot that multiplies into a spiral of thoughts). The owner's worries orbit a single gold dot with ticks and heartbeat accelerating, freeze on "You notice everything. So do they.", collapse into "Handled.", then the future arrives as phone notifications (visit complete with photos, a neighbor asking who does the lawn, the entrance washed before open) before naming the services and the walkthrough. Frame 1799 flows into frame 0.
+
+```bash
+cd video/v3
+HTML=thought.html END=1800 node ../render.mjs /tmp/v3 8
+python3 mix_thought.py /tmp/v3/cues.json /tmp
+```

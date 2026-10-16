@@ -132,10 +132,10 @@ const LINES = [
   { t: 1062, out: 1124, ws: [["Everything's", "Ready."], ["You", "Didn't", "Lift", "a", "Finger."]], y: 1500, z: 84 },
   { t: 1186, out: 1252, ws: [["Doors", "Open", "to", "a"], ["Spotless", "Entrance."]], y: 1500, z: 92 },
   { t: 1276, out: 1394, ws: [["You", "Haven't", "Thought"], ["About", "It", "in", "Months."]], y: 1420, z: 108, slow: true },
-  { t: 1402, out: 1424, ws: [["Lawn", "Care."]], y: 1440, z: 132, fast: true },
-  { t: 1426, out: 1448, ws: [["Power", "Washing."]], y: 1440, z: 132, fast: true },
-  { t: 1450, out: 1472, ws: [["Hedges", "and", "Beds."]], y: 1440, z: 132, fast: true },
-  { t: 1476, out: 1500, ws: [["Storefronts."]], y: 1440, z: 132, fast: true },
+  { t: 1402, out: 1414, ws: [["Lawn", "Care."]], y: 1440, z: 132, fast: true },
+  { t: 1426, out: 1438, ws: [["Power", "Washing."]], y: 1440, z: 132, fast: true },
+  { t: 1450, out: 1462, ws: [["Hedges", "and", "Beds."]], y: 1440, z: 132, fast: true },
+  { t: 1476, out: 1486, ws: [["Storefronts."]], y: 1440, z: 132, fast: true },
 ];
 
 // ── the future, as it arrives on their phone ──
@@ -170,7 +170,7 @@ function lineFX(el, words, f, { y, z, out, fast, slow, gold }) {
   show(el, true);
   const dur = fast ? 14 : slow ? 40 : 26;
   el.innerHTML = words.map((wd, i) => {
-    const p = E.out(K.prog(f, wd.t, dur)), q = E.exit(K.prog(f, out + i * 2, fast ? 8 : 14));
+    const p = E.out(K.prog(f, wd.t, dur)), q = E.exit(K.prog(f, out + (fast ? 0 : i * 2), fast ? 8 : 14));
     const blur = (1 - p) * 9 + q * 7;
     return `<span style="overflow:hidden;padding:0.06em 0.05em 0.16em;margin:0 0.1em -0.16em;vertical-align:top"><span style="transform:translateY(${(1 - p) * 70 - q * 30}%);opacity:${K.clamp(p * 1.4) * (1 - q)}${blur > 0.05 ? `;filter:blur(${blur.toFixed(2)}px)` : ""}">${wd.w}</span></span>`;
   }).join("");
