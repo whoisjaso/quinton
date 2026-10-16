@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Quinton, Soft Wash</title>
+<link rel="stylesheet" href="../lux/fonts-local.css" />
+<style>
+  @font-face { font-family: "Archivo"; src: url("../archivo.woff2") format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; }
+  html, body { margin: 0; background: #0b0a09; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #0b0a09; font-family: "Archivo", Arial, sans-serif; color: #f1e9da; }
+  .thread { position: absolute; inset: 0; background: #0b0a09; }
+  .head { position: absolute; left: 0; right: 0; top: 96px; height: 250px; text-align: center; border-bottom: 1px solid #23201c; background: rgba(16,15,13,0.96); z-index: 3; }
+  .back { position: absolute; left: 40px; top: 70px; font-size: 64px; color: #c9b48a; font-weight: 300; }
+  .av { width: 116px; height: 116px; border-radius: 50%; margin: 18px auto 0; display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 600; letter-spacing: 0.02em; }
+  .av.grey { background: linear-gradient(160deg, #6a665f, #45423d); color: #efe8dc; }
+  .av.gold { background: linear-gradient(150deg, #f2d9a0, #a8823f); color: #17130d; font-family: "Cormorant", serif; font-size: 66px; font-weight: 500; }
+  .name { font-size: 34px; font-weight: 500; margin-top: 14px; color: #f1e9da; }
+  .sub { font-size: 24px; color: #8d8679; margin-top: 4px; }
+  .view { position: absolute; left: 0; right: 0; top: 346px; height: 1352px; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 70px); mask-image: linear-gradient(to bottom, transparent 0, #000 70px); }
+  .col { position: absolute; left: 0; right: 0; top: 0; }
+  .it { position: absolute; left: 0; right: 0; }
+  .ts { text-align: center; font-size: 31px; color: #8d8679; padding: 34px 0 14px; }
+  .ts b { color: #b5ad9f; font-weight: 600; }
+  .row { display: flex; padding: 6px 44px; }
+  .row.me { justify-content: flex-end; }
+  .bub { max-width: 780px; padding: 28px 40px; border-radius: 50px; font-size: 50px; line-height: 1.26; }
+  .me .bub { background: linear-gradient(170deg, #f1e3c4, #e2cd9f); color: #17130d; border-bottom-right-radius: 14px; }
+  .them .bub { background: #27241f; color: #f1e9da; border-bottom-left-radius: 14px; }
+  .status { text-align: right; padding: 6px 56px 0; font-size: 29px; color: #8d8679; }
+  .status b { color: #b5ad9f; font-weight: 600; }
+  .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 700px; border-radius: 40px; overflow: hidden; border-bottom-left-radius: 14px; }
+  .photos img { width: 100%; height: 300px; object-fit: cover; display: block; }
+  .photos img:first-child { grid-column: span 2; height: 380px; }
+  .dots { display: flex; gap: 14px; padding: 34px 40px; }
+  .dots i { width: 22px; height: 22px; border-radius: 50%; background: #8d8679; display: block; }
+  #status { position: absolute; left: 0; right: 0; top: 0; height: 96px; display: flex; align-items: center; justify-content: space-between; padding: 0 70px; font-size: 34px; font-weight: 600; color: #f1e9da; z-index: 6; }
+  #status .bat { width: 62px; height: 28px; border: 2.5px solid #cfc7b8; border-radius: 9px; position: relative; }
+  #status .bat::after { content: ""; position: absolute; left: 3px; top: 3px; bottom: 3px; width: 70%; background: #cfc7b8; border-radius: 4px; }
+  #composer { position: absolute; left: 0; right: 0; top: 1716px; height: 204px; background: rgba(16,15,13,0.98); border-top: 1px solid #23201c; z-index: 4; }
+  #field { position: absolute; left: 44px; right: 150px; top: 26px; min-height: 92px; border: 2px solid #3a3631; border-radius: 48px; padding: 22px 36px; box-sizing: border-box; font-size: 40px; color: #f1e9da; white-space: nowrap; overflow: hidden; }
+  #field .ph { color: #6f695f; }
+  #caret { display: inline-block; width: 3px; height: 44px; background: #e2cd9f; vertical-align: -8px; margin-left: 2px; }
+  #send { position: absolute; right: 44px; top: 30px; width: 84px; height: 84px; border-radius: 50%; background: #3a3631; display: flex; align-items: center; justify-content: center; font-size: 46px; color: #0b0a09; font-weight: 700; }
+  #dim { position: absolute; inset: 0; background: #0b0a09; opacity: 0; z-index: 8; pointer-events: none; }
+  .line { position: absolute; left: 70px; right: 70px; text-align: center; font-family: "Cormorant", Georgia, serif; font-weight: 400; color: #f6ead0; z-index: 9; display: none; line-height: 1.08; }
+  .line span { display: inline-block; }
+  .end { position: absolute; left: 0; right: 0; text-align: center; z-index: 9; display: none; }
+  #grain { position: absolute; inset: 0; width: 1080px; height: 1920px; opacity: 0.05; mix-blend-mode: overlay; pointer-events: none; z-index: 10; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="status"><span>9:41</span><span class="bat"></span></div>
+  <div class="thread" id="t1"><div class="head"><div class="back">&lsaquo;</div><div class="av grey" id="av1">LS</div><div class="name" id="n1">Lawn Service</div><div class="sub">Text Message</div></div><div class="view"><div class="col" id="c1"></div></div></div>
+  <div class="thread" id="t2"><div class="head"><div class="back">&lsaquo;</div><div class="av gold" id="av2">Q</div><div class="name" id="n2">Quinton</div><div class="sub">Text Message</div></div><div class="view"><div class="col" id="c2"></div></div></div>
+  <div id="composer"><div id="field"></div><div id="send">&uarr;</div></div>
+  <div id="dim"></div>
+  <div class="line" id="rehook"></div>
+  <div class="end" id="e1" style="font-family:Cormorant,serif;font-size:132px;font-weight:400;color:#f6ead0">Text Quinton.</div>
+  <div class="end" id="e2" style="font-size:58px;font-weight:500;letter-spacing:0.04em;color:#f1e9da">(281) 788-6172</div>
+  <div class="end" id="e3" style="font-size:34px;color:#cbbf9f;letter-spacing:0.02em"></div>
+  <div class="end" id="e4" style="font-size:26px;color:#c9a35f;letter-spacing:0.32em;text-transform:uppercase">Greater Houston</div>
+  <div class="end" id="e5"><span id="e5t" style="display:inline-block;border:1.5px solid #c9a35f;border-radius:999px;padding:24px 52px;font-size:36px;color:#f1e9da"></span></div>
+  <img id="grain" src="../lux/assets/grain0.png" />
+</div>
+<script src="kit.js"></script>
+<script>
+/* QUINTON, "The Thread". 30 s, 60 fps (1800 f), 1080x1920, seamless loop (frame 1799 flows into frame 0).
+   Idea: Quinton texts back.
+   Device: the text thread itself. Calm motion only: typed in the composer, sent, the thread eases up.
+   Grammar: unanswered texts on one side, a contractor who reports in on the other. */
+const END = 1800, E = K.E;
+const $ = (id) => document.getElementById(id);
+const show = (el, on) => (el.style.display = on ? "block" : "none");
+
+/*SCENE*/
+const SCENE = {
+  t1: { name: "Pressure Washing Co.", initials: "PW" },
+  services: "Soft Washing &middot; Power Washing &middot; Lawn Care",
+  pill: "Text a photo, get a price",
+  rehook: ["You", "Shouldn't", "Have", "to", "Wonder", "What", "They", "Did."],
+  T1: [
+    { k: "ts", s: "<b>Wednesday</b> 3:10 PM", t: 24 },
+    { k: "me", s: "The estimate said soft wash. Why is there paint chipped all over the patio?", t: 96 },
+    { k: "status", s: "Delivered", t: 118, out: 222 },
+    { k: "ts", s: "<b>Wednesday</b> 6:45 PM", t: 208 },
+    { k: "me", s: "And there are stripes all over the pavers.", t: 272 },
+    { k: "status", s: "Delivered", t: 294, out: 366 },
+    { k: "ts", s: "<b>Thursday</b> 9:02 AM", t: 352 },
+    { k: "them", s: "That's just oxidation. It'll even out.", t: 374 },
+    { k: "me", s: "It's been three days. Who's paying for this?", t: 476 },
+    { k: "status", s: "<b>Read</b> 9:20 AM", t: 498 },
+    { k: "typing", t: 522, out: 604 },
+  ],
+  T2: [
+    { k: "ts", s: "<b>Tuesday</b> 7:05 AM", t: 712 },
+    { k: "them", s: "Morning. Starting with a test patch behind the side gate.", t: 734 },
+    { k: "photo", t: 820, imgs: ["hardscape-pool-deck", "modern-entry-drive", "estate-classic-lawn"] },
+    { k: "them", s: "Stone and pavers are soft washed, never blasted. Before and after of every side.", t: 856 },
+    { k: "me", s: "It looks better than the day we moved in.", t: 980 },
+    { k: "them", s: "That's the standard. Gate's closed on the way out.", t: 1056 },
+    { k: "ts", s: "<b>Saturday</b> 4:20 PM", t: 1132 },
+    { k: "me", s: "Can you do my mom's driveway too?", t: 1222 },
+    { k: "typing", t: 1250, out: 1300 },
+    { k: "them", s: "Send me her address. I'll text her first.", t: 1300 },
+  ],
+};
+/*END SCENE*/
+const T1 = SCENE.T1, T2 = SCENE.T2;
+$("n1").textContent = SCENE.t1.name; $("av1").textContent = SCENE.t1.initials;
+$("e3").innerHTML = SCENE.services; $("e5t").textContent = SCENE.pill;
+const PUSH = 690, DIM0 = 612, ENDC = 1396, TAIL = 1722;
+
+function build(list, col) {
+  list.forEach((m) => {
+    const d = document.createElement("div"); d.className = "it";
+    if (m.k === "ts") d.innerHTML = `<div class="ts">${m.s}</div>`;
+    else if (m.k === "status") d.innerHTML = `<div class="status">${m.s}</div>`;
+    else if (m.k === "typing") d.innerHTML = `<div class="row them"><div class="bub" style="padding:0"><div class="dots"><i></i><i></i><i></i></div></div></div>`;
+    else if (m.k === "photo") d.innerHTML = `<div class="row them"><div class="photos">${m.imgs.map((n) => `<img src="../../public/images/m/${n}.jpg">`).join("")}</div></div>`;
+    else d.innerHTML = `<div class="row ${m.k}"><div class="bub">${m.s}</div></div>`;
+    col.appendChild(d); m.el = d;
+  });
+}
+build(T1, $("c1")); build(T2, $("c2"));
+let measured = false;
+function measure() { [...T1, ...T2].forEach((m) => (m.h = m.el.offsetHeight)); measured = true; }
+
+// lay a thread out bottom-up: each arrival grows in height (the thread eases up) and fades in place
+function layout(list, f, viewH) {
+  let total = 0;
+  const w = list.map((m) => {
+    if (f < m.t) return 0;
+    let x = E.inOut(K.prog(f, m.t, 22));
+    if (m.out != null) x *= 1 - E.inOut(K.prog(f, m.out, 18));
+    return x;
+  });
+  list.forEach((m, i) => (total += m.h * w[i]));
+  let y = viewH - 24 - total;
+  list.forEach((m, i) => {
+    const vis = w[i] > 0.001;
+    show(m.el, vis);
+    if (!vis) return;
+    const appear = E.out(K.prog(f, m.t + 4, 20));
+    const leave = m.out != null ? E.smooth(K.prog(f, m.out, 12)) : 0;
+    m.el.style.transform = `translateY(${y + (1 - appear) * 14}px)`;
+    m.el.style.opacity = appear * (1 - leave);
+    y += m.h * w[i];
+    if (m.k === "typing") m.el.querySelectorAll("i").forEach((d, j) => (d.style.opacity = 0.35 + 0.65 * Math.max(0, Math.sin((f - m.t) / 9 - j * 0.9))));
+  });
+}
+
+// composer: my texts are typed before they are sent
+function composer(f) {
+  const field = $("field");
+  const thread = f < PUSH + 20 ? T1 : T2;
+  const next = thread.find((m) => m.k === "me" && f < m.t && f >= m.t - typeDur(m) - 10);
+  let html = `<span class="ph">Text Message</span>`;
+  let ready = false;
+  if (next) {
+    const dur = typeDur(next), t0 = next.t - dur - 8;
+    const n = Math.round(next.s.length * E.smooth(K.prog(f, t0, dur)));
+    if (f >= t0) { html = next.s.slice(0, n) + `<span id="caret"></span>`; ready = n > 0; }
+  }
+  field.innerHTML = html;
+  $("send").style.background = ready ? "#e2cd9f" : "#3a3631";
+}
+const typeDur = (m) => Math.min(58, 10 + m.s.length * 1.1);
+
+function seek(t) {
+  const f = Math.round(t * 60);
+  if (!measured) measure();
+  $("grain").src = `../lux/assets/grain${f % 6}.png`;
+
+  // threads: the first until the push, then a calm swipe to Quinton; loop tail returns to the empty first thread
+  const push = E.inOut(K.prog(f, PUSH, 36));
+  const back = f >= TAIL ? 1 : 0;
+  const t1 = $("t1"), t2 = $("t2");
+  if (back) {
+    t1.style.transform = "none"; t1.style.opacity = 1; show(t1, true); show(t2, false);
+    layout(T1, -1, 1352);
+  } else {
+    show(t1, push < 1); show(t2, push > 0);
+    t1.style.transform = `translateX(${-30 * push}%)`; t1.style.opacity = 1 - 0.6 * push;
+    t2.style.transform = `translateX(${100 * (1 - push)}%)`;
+    t2.style.boxShadow = push > 0 && push < 1 ? "-30px 0 60px rgba(0,0,0,0.5)" : "none";
+    layout(T1, f, 1352); layout(T2, f, 1352);
+  }
+  composer(back ? -1 : f);
+
+  // the rehook: the thread dims while the unanswered dots vanish
+  let dim = 0;
+  if (f >= DIM0 && f < PUSH + 30) dim = 0.92 * E.smooth(K.prog(f, DIM0, 28)) * (1 - E.smooth(K.prog(f, PUSH, 30)));
+  if (f >= ENDC) dim = 0.9 * E.smooth(K.prog(f, ENDC, 34));
+  if (f >= TAIL) dim = f < 1760 ? 0.9 + 0.1 * E.smooth(K.prog(f, TAIL, 16)) : 1 - E.smooth(K.prog(f, 1760, 38));
+  $("dim").style.opacity = dim;
+
+  const rh = $("rehook");
+  if (f >= DIM0 + 10 && f < PUSH + 10) {
+    show(rh, true);
+    const words = SCENE.rehook;
+    rh.innerHTML = words.map((w, i) => {
+      const p = E.out(K.prog(f, DIM0 + 14 + i * 6, 26)), q = E.exit(K.prog(f, PUSH - 6, 14));
+      return `<span style="opacity:${p * (1 - q)};transform:translateY(${(1 - p) * 18}px);margin:0 0.12em">${w}</span>`;
+    }).join(" ");
+    Object.assign(rh.style, { top: "820px", fontSize: "104px" });
+  } else show(rh, false);
+
+  // end card
+  const tailFade = f >= TAIL ? 1 - E.smooth(K.prog(f, TAIL, 24)) : 1;
+  [["e1", ENDC + 34, 700], ["e2", ENDC + 64, 900], ["e3", ENDC + 84, 1000], ["e4", ENDC + 96, 1070], ["e5", ENDC + 120, 1190]].forEach(([id, t0, top]) => {
+    const el = $(id);
+    if (f < t0 || f >= TAIL + 26) return show(el, false);
+    show(el, true);
+    const p = E.out(K.prog(f, t0, 30));
+    Object.assign(el.style, { top: top + "px", opacity: p * tailFade, transform: `translateY(${(1 - p) * 16}px)` });
+  });
+}
+
+window.ready = () => seek(0);
+window.CUE_LIST = () => ({
+  sends: [...T1, ...T2].filter((m) => m.k === "me").map((m) => m.t),
+  typing: [...T1, ...T2].filter((m) => m.k === "me").map((m) => [m.t - typeDur(m) - 8, typeDur(m)]),
+  receives: [...T1, ...T2].filter((m) => m.k === "them" || m.k === "photo").map((m) => m.t),
+  firstQ: (T2.find((m) => m.k === "them") || {}).t,
+  firstReply: 734, push: PUSH, silence: [672, PUSH], rehook: DIM0 + 14, end: ENDC, tail: TAIL,
+});
+if (location.hash === "#preview") {
+  const t0 = performance.now();
+  const loop = () => { seek(((performance.now() - t0) / 1000) % (END / 60)); requestAnimationFrame(loop); };
+  window.onload = () => { measure(); loop(); };
+}
+</script>
+</body>
+</html>

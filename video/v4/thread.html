@@ -51,16 +51,16 @@
 <body>
 <div id="stage">
   <div id="status"><span>9:41</span><span class="bat"></span></div>
-  <div class="thread" id="t1"><div class="head"><div class="back">&lsaquo;</div><div class="av grey">LS</div><div class="name">Lawn Service</div><div class="sub">Text Message</div></div><div class="view"><div class="col" id="c1"></div></div></div>
-  <div class="thread" id="t2"><div class="head"><div class="back">&lsaquo;</div><div class="av gold">Q</div><div class="name">Quinton</div><div class="sub">Text Message</div></div><div class="view"><div class="col" id="c2"></div></div></div>
+  <div class="thread" id="t1"><div class="head"><div class="back">&lsaquo;</div><div class="av grey" id="av1">LS</div><div class="name" id="n1">Lawn Service</div><div class="sub">Text Message</div></div><div class="view"><div class="col" id="c1"></div></div></div>
+  <div class="thread" id="t2"><div class="head"><div class="back">&lsaquo;</div><div class="av gold" id="av2">Q</div><div class="name" id="n2">Quinton</div><div class="sub">Text Message</div></div><div class="view"><div class="col" id="c2"></div></div></div>
   <div id="composer"><div id="field"></div><div id="send">&uarr;</div></div>
   <div id="dim"></div>
   <div class="line" id="rehook"></div>
   <div class="end" id="e1" style="font-family:Cormorant,serif;font-size:132px;font-weight:400;color:#f6ead0">Text Quinton.</div>
   <div class="end" id="e2" style="font-size:58px;font-weight:500;letter-spacing:0.04em;color:#f1e9da">(281) 788-6172</div>
-  <div class="end" id="e3" style="font-size:34px;color:#cbbf9f;letter-spacing:0.02em">Lawn Care &middot; Power Washing &middot; Storefronts</div>
+  <div class="end" id="e3" style="font-size:34px;color:#cbbf9f;letter-spacing:0.02em"></div>
   <div class="end" id="e4" style="font-size:26px;color:#c9a35f;letter-spacing:0.32em;text-transform:uppercase">Greater Houston</div>
-  <div class="end" id="e5"><span style="display:inline-block;border:1.5px solid #c9a35f;border-radius:999px;padding:24px 52px;font-size:36px;color:#f1e9da">Text a photo, get a price</span></div>
+  <div class="end" id="e5"><span id="e5t" style="display:inline-block;border:1.5px solid #c9a35f;border-radius:999px;padding:24px 52px;font-size:36px;color:#f1e9da"></span></div>
   <img id="grain" src="../lux/assets/grain0.png" />
 </div>
 <script src="kit.js"></script>
@@ -73,7 +73,13 @@ const END = 1800, E = K.E;
 const $ = (id) => document.getElementById(id);
 const show = (el, on) => (el.style.display = on ? "block" : "none");
 
-const T1 = [
+/*SCENE*/
+const SCENE = {
+  t1: { name: "Lawn Service", initials: "LS" },
+  services: "Lawn Care &middot; Power Washing &middot; Storefronts",
+  pill: "Text a photo, get a price",
+  rehook: ["You", "Shouldn't", "Have", "to", "Chase", "Anyone."],
+  T1: [
   { k: "ts", s: "<b>Tuesday</b> 9:14 AM", t: 24 },
   { k: "me", s: "Hey, are you guys still coming today?", t: 70 },
   { k: "status", s: "Delivered", t: 92, out: 210 },
@@ -87,8 +93,8 @@ const T1 = [
   { k: "me", s: "Hello?", t: 506 },
   { k: "status", s: "<b>Read</b> 8:33 AM", t: 528 },
   { k: "typing", t: 546, out: 608 },
-];
-const T2 = [
+],
+  T2: [
   { k: "ts", s: "<b>Monday</b> 6:42 AM", t: 712 },
   { k: "them", s: "Morning. On site now, done by 9.", t: 734 },
   { k: "photo", t: 820, imgs: ["turf-macro", "hardscape-pool-deck", "modern-steps-lawn"] },
@@ -99,7 +105,12 @@ const T2 = [
   { k: "me", s: "Our neighbor just asked who does our lawn.", t: 1222 },
   { k: "typing", t: 1250, out: 1300 },
   { k: "them", s: "Send them my way.", t: 1300 },
-];
+],
+};
+/*END SCENE*/
+const T1 = SCENE.T1, T2 = SCENE.T2;
+$("n1").textContent = SCENE.t1.name; $("av1").textContent = SCENE.t1.initials;
+$("e3").innerHTML = SCENE.services; $("e5t").textContent = SCENE.pill;
 const PUSH = 690, DIM0 = 612, ENDC = 1396, TAIL = 1722;
 
 function build(list, col) {
@@ -189,7 +200,7 @@ function seek(t) {
   const rh = $("rehook");
   if (f >= DIM0 + 10 && f < PUSH + 10) {
     show(rh, true);
-    const words = ["You", "Shouldn't", "Have", "to", "Chase", "Anyone."];
+    const words = SCENE.rehook;
     rh.innerHTML = words.map((w, i) => {
       const p = E.out(K.prog(f, DIM0 + 14 + i * 6, 26)), q = E.exit(K.prog(f, PUSH - 6, 14));
       return `<span style="opacity:${p * (1 - q)};transform:translateY(${(1 - p) * 18}px);margin:0 0.12em">${w}</span>`;
@@ -212,7 +223,8 @@ window.ready = () => seek(0);
 window.CUE_LIST = () => ({
   sends: [...T1, ...T2].filter((m) => m.k === "me").map((m) => m.t),
   typing: [...T1, ...T2].filter((m) => m.k === "me").map((m) => [m.t - typeDur(m) - 8, typeDur(m)]),
-  receives: T2.filter((m) => m.k === "them" || m.k === "photo").map((m) => m.t),
+  receives: [...T1, ...T2].filter((m) => m.k === "them" || m.k === "photo").map((m) => m.t),
+  firstQ: (T2.find((m) => m.k === "them") || {}).t,
   firstReply: 734, push: PUSH, silence: [672, PUSH], rehook: DIM0 + 14, end: ENDC, tail: TAIL,
 });
 if (location.hash === "#preview") {

@@ -8,6 +8,9 @@ A = "audio/"
 F = lambda f: f / FPS
 C = json.load(open(sys.argv[1]))
 out = sys.argv[2]
+VODIR = sys.argv[3] if len(sys.argv) > 3 else "vo"
+V2 = int(sys.argv[4]) if len(sys.argv) > 4 else 596
+TAG = sys.argv[5] if len(sys.argv) > 5 else "thread"
 
 
 def load(p, a=None, b=None):
@@ -57,7 +60,7 @@ for t in C["sends"]:
     place(fx, load(A + "msg-sent.mp3"), F(t), -2, "peak")
 
 # Quinton's side: a buzz on the first reply, a chime on each message
-place(fx, load(A + "vibrate-twice.mp3", 0, 1.0), F(C["firstReply"]) - 0.35, -10, "start")
+place(fx, load(A + "vibrate-twice.mp3", 0, 1.0), F(C.get("firstQ") or C.get("firstReply")) - 0.35, -10, "start")
 for t in C["receives"]:
     place(fx, load(A + "msg-receive.mp3"), F(t), -9, "peak")
 
@@ -65,8 +68,8 @@ for t in C["receives"]:
 place(fx, load(A + "piano-boom-g3.mp3"), F(C["end"] + 34), -8, "peak")
 
 # voice: four lines, deadpan and warm
-for key, f0 in [("v1", 14), ("v2", 596), ("v3", C["end"]), ("v4", 1490)]:
-    place(vo, load(f"vo/{key}.wav"), F(f0), 0)
+for key, f0 in [("v1", 14), ("v2", V2), ("v3", C["end"]), ("v4", 1490)]:
+    place(vo, load(f"{VODIR}/{key}.wav"), F(f0), 0)
 
 # music only once someone finally answers: the track's own quiet piano opening, from the swipe
 body = load(A + "music-staring-at-the-night-sky.mp3", 6.3, 6.3 + LEN - F(C["push"]))
@@ -85,7 +88,7 @@ venv = np.convolve(np.abs(vo).mean(1), np.ones(int(0.05 * SR)) / int(0.05 * SR),
 duck = np.clip(np.convolve((venv > 0.004).astype(np.float32), np.ones(int(0.4 * SR)) / int(0.4 * SR), "same") * 3, 0, 1)
 mus *= (1 - 0.5 * duck)[:, None]
 
-for name, mix in [("thread-fx-only", fx + mus * 10 ** (-9 / 20)), ("thread-vo-mix", fx + mus * 10 ** (-9 / 20) + vo * 10 ** (-9 / 20))]:
+for name, mix in [(f"{TAG}-fx-only", fx + mus * 10 ** (-9 / 20)), (f"{TAG}-vo-mix", fx + mus * 10 ** (-9 / 20) + vo * 10 ** (-9 / 20))]:
     raw = f"{out}/{name}.f32"
     mix.astype(np.float32).tofile(raw)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "f32le", "-ar", str(SR), "-ac", "2", "-i", raw,
